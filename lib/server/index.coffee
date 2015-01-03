@@ -36,11 +36,24 @@ module.exports = ->
       unless @themeRoot
         @themeRoot = @_getCWD()
 
+      @readSiteChefRC()
       @loadDataFile()
       @runGulp()
       @generateApp()
       @serve()
 
+    ###
+    # Reads the .sitechefrc file
+    # if it exits
+    ###
+    readSiteChefRC: =>
+      rcPath = path.join @themeRoot, '.sitechefrc'
+      try
+        @rcContents = JSON.parse(
+          fs.readFileSync(rcPath)
+        )
+      catch e
+        @rcContents = {}
 
     ###
     # Loads The JSON data file
@@ -65,7 +78,11 @@ module.exports = ->
     # in order to recompile assets on the fly
     ###
     runGulp: =>
-      Gulp @themeRoot, false
+      compilerCmd = false
+      if 'compileCommand' of @rcContents
+        compilerCmd = @rcContents.compileCommand
+
+      Gulp @themeRoot, compilerCmd
       , (data) ->
         # data already printed
         # by gulp
