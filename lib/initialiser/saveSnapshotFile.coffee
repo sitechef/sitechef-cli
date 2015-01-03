@@ -71,7 +71,7 @@ module.exports = (apiKey, destination, themeDirectory, callback, overrides) ->
           # concatenate image base path
           # with relative path of logo & favicon
           if _.indexOf(imagePathUri, pref) isnt -1
-            content = imageRoot + content
+            content = imageRoot + "images" + content
 
           memo+= "$#{pref}:'#{content}';\n"
 

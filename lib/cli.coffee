@@ -85,11 +85,12 @@ module.exports = (overrides) ->
           if 'code' of err and err.code is 'EEXIST'
             return console.error "\n\nINSTALLATION FAILED\n\n"
             , "Directory Already Exists\n\n\n"
-          return console.error("\n\nINSTALLATION FAILED \n\n"
+          console.error("\n\nINSTALLATION FAILED \n\n"
           , " If this happens again, report to dev@sitechef.co.uk \n\n"
           , " Details: "
           , err, err.stack.split("\n")
           )
+          return process.exit()
         console.log "Installed to "
         , results.generateFolder.path
         console.log complete.join('\n')

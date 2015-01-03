@@ -50,10 +50,12 @@ class NunjucksEnv
 
     ###
     # Returns an item json encoded
+    # and escaped of html backslashes
     ###
     json_encode: (val) ->
       return val unless val?
-      JSON.stringify val
+      JSON.stringify(val)
+        .replace(/\//g, '\\/')
 
     ###
     # Strips Tags from input string

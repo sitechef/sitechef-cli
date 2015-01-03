@@ -1,6 +1,6 @@
 {
   "name": "sitechef",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Command Line Interface for editing and previewing SiteChef themes locally",
   "main": "index.js",
   "bin": {
