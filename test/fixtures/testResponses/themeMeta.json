@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "name": "Test Site",
+    "description": "Information about my test site"
+  },
+  "variables": {
+    "fonts": [],
+    "colours": [],
+    "variables": []
+  }
+}
