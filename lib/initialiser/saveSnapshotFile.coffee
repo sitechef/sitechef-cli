@@ -18,6 +18,7 @@ Defaults = require '../defaults'
 _ = require 'lodash'
 fs = require 'fs'
 async = require 'async'
+path = require 'path'
 
 ###
 # @param {String} apiKey
@@ -77,7 +78,8 @@ module.exports = (apiKey, destination, themeDirectory, callback, overrides) ->
 
         memo
       , ''
-      fs.writeFileSync themeDirectory + '/prefs.scss'
+      prefsFilePath = path.join(themeDirectory, 'prefs.scss')
+      fs.writeFileSync prefsFilePath
       , preferencesSCSS
       cb null, snapshotFile
 

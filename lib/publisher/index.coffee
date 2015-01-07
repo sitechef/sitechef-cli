@@ -75,7 +75,7 @@ module.exports = ->
     # Reads sitechef file
     # to fetch api key
     ###
-    parseSiteChefFile: (test)=>
+    parseSiteChefFile: (test, updateDate = true)=>
       console.log "\nReading Coniguration..\n"
       siteChefPath = @configOverride || path.join(
         @themeRoot,
@@ -92,7 +92,8 @@ module.exports = ->
 
         @config.lastPublished = if test? then null else new Date()
         # update the published date to now
-        fs.writeFileSync(siteChefPath, JSON.stringify(@config, null, 2))
+        if updateDate
+          fs.writeFileSync(siteChefPath, JSON.stringify(@config, null, 2))
 
       catch e
         console.error(

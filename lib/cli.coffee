@@ -15,6 +15,7 @@ fs = require 'fs'
 Init = require './initialiser'
 Server = require('./server')()
 Publisher = require('./publisher')()
+Updater = require './updater'
 
 module.exports = (overrides) ->
   packageData = JSON.parse(
@@ -41,6 +42,12 @@ module.exports = (overrides) ->
     "       "
     "       Publishes your theme back to SiteChef"
     ""
+    "  sitechef data-update"
+    ""
+    "       Updates your local data file from the latest"
+    "       data on the website."
+    "       N.B. Remember to run 'Generate JSON Snapshot' first"
+    "            (found in the Theme Manager at admin.sitechef.co.uk)"
     ""
   ]
 
@@ -106,6 +113,10 @@ module.exports = (overrides) ->
     when 'publish'
       console.log "\n\nPublishing Theme...\n\n"
       publish = new Publisher cwd
+
+    when 'update-data'
+      console.log "\n\nFetching the latest data file...\n\n"
+      Updater(cwd)
 
     else
       sendInstructions()

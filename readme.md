@@ -61,11 +61,21 @@ Navigate to your theme directory in the Terminal / Command
         sitechef publish
 
 
+##Updating your local data for templating
+
+Navigate to your theme directory in the Terminal / Command
+
+      sitechef data-update
+
+
 #Templating
 
-##Local File Structure
+Full documentation for using this CLI and creating SiteChef Themes
+can be found at [themedocs.sitechef.co.uk](http://themedocs.sitechef.co.uk)
+
 
 ##HTML Templates
+
 - SiteChef uses Nunjucks - a javascript implementation of the Jinja2 templating engine
 
 ##CSS
