@@ -48,7 +48,7 @@ module.exports = (directory, callback, logOutput = true) ->
     ((data, cb) ->
       errorThrown = false
       child = childProcess(
-        "npm install"
+        "npm install --production"
         , cwd: directory
         , (err, stdout, stderr)->
           return cb(new CustomerError(

@@ -1,6 +1,6 @@
 {
   "name": "sitechef",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Command Line Interface for editing, previewing locally and publishing SiteChef themes",
   "main": "index.js",
   "bin": {
@@ -38,11 +38,11 @@
     "glob": "4.3.1",
     "mime": "1.2.11",
     "archiver": "0.13.0",
-    "temp": "^0.8.1"
+    "temp": "0.8.1"
   },
   "devDependencies": {
-    "jasmine-node": "^2.0.0",
-    "rimraf": "^2.2.8",
-    "nock": "^0.52.0"
+    "jasmine-node": "2.0.0",
+    "rimraf": "2.2.8",
+    "nock": "0.52.0"
   }
 }
