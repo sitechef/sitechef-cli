@@ -45,7 +45,7 @@ module.exports = (themeRoot) ->
     if err
       throw err
 
-    console.log "Data file updated successfully"
+    console.log "\n\nData file updated successfully"
 
 
 

@@ -61,6 +61,16 @@ module.exports = (config, callback, classOnly = false) ->
           er.status = 403
           return @callback(err, body)
 
+        if res.statusCode is 504
+          er = CustomerError(
+            "Timed out while communicating with SiteChef API " +
+            "- Check Your Connectivity (504)"
+          )
+          er.status = 504
+          if process.env.DEBUG_MODE
+            console.error(requestOpts, body)
+          return @callback(err, body)
+
         if res.statusCode isnt 200
           er = CustomerError(
             "Failed to get/send to SiteChef server - " + res.statusCode
