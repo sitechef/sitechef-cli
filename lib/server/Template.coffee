@@ -21,4 +21,10 @@ module.exports = (rootDirectory)->
   env = NunjucksEnv.make(nunjucks, rootDirectory)
 
   render = (template, data, callback) ->
-    env.render template, data, callback
+    try
+      env.render template, data, callback
+    catch e
+      errorMessage = "<h1>Error Rendering Templates</h1>"
+      errorMessage+= "<h4>#{e.message}</h4>"
+      errorMessage+= e.stack.replace("\n", "<br/>")
+      callback null, errorMessage
