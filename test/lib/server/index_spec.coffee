@@ -11,6 +11,25 @@ describe "Server/index", ->
     server = new ServerMock()
 
 
+  describe 'filterPagesById', ->
+    it "should index all items by id which are not api calls", ->
+      data =
+        '/api/item1':
+          content:
+            name: 'no'
+            id: 28
+        '/my-url':
+          content:
+            name: 'yes'
+            id: 2
+      server.data = data
+      server.filterPagesById()
+      expect(server.pagesById[2].name)
+        .toBe 'yes'
+
+      expect(server.pagesById[29])
+        .toBe undefined
+
   describe "respond", ->
 
     it "should call next if url not found in datafile", ->

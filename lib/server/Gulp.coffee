@@ -28,7 +28,7 @@ module.exports = (themeDirectory, command=false, endCb) ->
   unless command
     command = ["node_modules", ".bin", "gulp"]
 
-  cmd = command[command.length - 1]
+  cmd = command[command.length - 1].replace(/\ .*$/, '')
 
   fullPath = path.join.apply(@,
     [themeDirectory].concat(command)

@@ -38,6 +38,7 @@ module.exports = ->
 
       @readSiteChefRC()
       @loadDataFile()
+      @filterPagesById()
       @runGulp()
       @generateApp()
       @serve()
@@ -72,6 +73,25 @@ module.exports = ->
         )
         # exit now
         process.exit(1)
+
+    ###
+    # Filters pages by id
+    # so they can be easily returned
+    # by the nunjucks get_page function
+    ###
+    filterPagesById: =>
+      filteredPages = _.filter(@data
+      , (data, section) ->
+        # ignore any items
+        # that begin with '/api'
+        !section.match(/^.api/)
+      )
+      @pagesById = _.reduce(filteredPages
+      , (memo, val) ->
+        return memo unless val.content
+        memo[val.content.id] = val.content
+        memo
+      , {})
 
     ###
     # Executes Gulp in the background
@@ -141,12 +161,25 @@ module.exports = ->
           @renderIframes pageData, cb
         )
         ((data, cb) =>
+          # function for getting
+          # page
+          data.get_page = (id) =>
+            return false unless id?
+            return false unless @pagesById[id]?
+            @pagesById[id]
+
           @render 'index.html', data, cb
         )
       ], (err, result) ->
         return next(err) if err
 
         res.send result
+
+    ###
+    # Finds a page by id
+    # from the data.json file
+    # @param {Integer} page id
+    ###
 
     ###
     # Deal with http errors
