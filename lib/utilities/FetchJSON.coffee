@@ -55,11 +55,12 @@ module.exports = (config, callback, classOnly = false) ->
       , (err, res, body)=>
         return @callback(err) if err
         if res.statusCode is 403
-          er = CustomerError(
-            "API Code invalid. Please check and try again"
-          )
-          er.status = 403
-          return @callback(err, body)
+          # if it's 403 error, stop all work
+          # and exit
+          error = "\n\nFATAL: API Code invalid. " +
+          "Please check and try again"
+          console.error(error)
+          return process.exit(1)
 
         if res.statusCode is 504
           er = CustomerError(
