@@ -76,7 +76,7 @@ module.exports = ->
     # to fetch api key
     ###
     parseSiteChefFile: (test, updateDate = true)=>
-      console.log "\nReading Coniguration..\n"
+      console.log "\nReading Configuration..\n"
       siteChefPath = @configOverride || path.join(
         @themeRoot,
         '.sitechef'

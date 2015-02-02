@@ -42,7 +42,7 @@ module.exports = (overrides) ->
     "       "
     "       Publishes your theme back to SiteChef"
     ""
-    "  sitechef data-update"
+    "  sitechef update-data"
     ""
     "       Updates your local data file from the latest"
     "       data on the website."
