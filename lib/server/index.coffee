@@ -136,8 +136,12 @@ module.exports = ->
     # Responds to all routes
     ###
     respond : (req, res, next) =>
-      url = req.url.toLowerCase()
+      lowercaseUrl = req.url.toLowerCase()
         .replace /([a-zA-Z])\/$/, '$1'
+
+      url = if lowercaseUrl of @data
+      then lowercaseUrl
+      else req.url
 
       return next() unless url of @data
 
