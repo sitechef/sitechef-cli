@@ -3,6 +3,7 @@ S3Upload = require(
 )
 nock = require 'nock'
 fs = require 'fs'
+_ = require 'lodash'
 
 describe "S3Upload", ->
 
@@ -15,6 +16,7 @@ describe "S3Upload", ->
     signature: 'signature'
     "Content-Type": "contenttype"
     bucket: 'test'
+    gzip: false
 
   beforeEach ->
 
@@ -61,6 +63,18 @@ describe "S3Upload", ->
       expect(opts.signature).toBe 'signature'
       expect(opts['Content-Type']).toBe 'contenttype'
       expect(opts['Content-Length']).toBe 29
+
+    it "Should add content encoding if gzip specified", ->
+      s3.policy = _.clone examplePolicy
+      s3.policy.gzip = true
+      s3.acl = 'public-read'
+
+      s3.filePath = __dirname + '/../../fixtures/' +
+        'test.js.gz'
+
+      res = s3.makeOptions(59)
+      expect(res.formData['Content-Encoding'])
+        .toBe 'gzip'
 
 
 

@@ -14,6 +14,7 @@ request = require 'request'
 fs = require 'fs'
 async = require 'async'
 log = require('single-line-log').stdout
+_ = require 'lodash'
 
 FetchJSON = require './FetchJSON'
 
@@ -72,7 +73,7 @@ class S3Upload
 
     opts = @makeOptions(fileSize)
 
-    @log "Uploading #{@filePath} ..."
+    @log "Uploading to #{@policy.key} ..."
 
     # instantiate the request
     r = request opts
@@ -83,10 +84,10 @@ class S3Upload
       )
       if success
         @completed = true
-        @log "Uploaded #{@filePath} successfully"
+        @log "Uploaded #{@policy.key} successfully"
         return cb(null, true)
 
-      @log "Failed to upload #{@filePath}"
+      @log "Failed to upload #{@filePath} (#{@policy.key})"
       , (err || message.statusCode), body
 
       # retry if below retry limit
@@ -99,7 +100,7 @@ class S3Upload
       @completed = true
       cb(
         new Error(
-          "Failed to upload #{@filePath}"
+          "Failed to upload #{@filePath} (#{@policy.key})"
         )
       )
 
@@ -136,8 +137,16 @@ class S3Upload
         policy: @policy.policy
         signature: @policy.signature
         "Content-Type": @policy['Content-Type']
-        "Content-Length": fileSize
-        file: fs.createReadStream(@filePath)
+
+    if @policy.gzip
+      options.formData["Content-Encoding"] = 'gzip'
+
+    _.extend options.formData
+    ,
+      "Content-Length": fileSize
+      file: fs.createReadStream(@filePath)
+
+    options
 
   # delay in between
   # each upload progress request
