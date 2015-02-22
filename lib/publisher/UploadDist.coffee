@@ -20,6 +20,10 @@ async = require 'async'
 glob = require 'glob'
 mime = require 'mime'
 path = require 'path'
+os = require 'os'
+uuid = require 'uuid'
+zlib = require('zlib')
+fs = require 'fs'
 _ = require 'lodash'
 
 ###
@@ -110,7 +114,7 @@ module.exports = (themeRoot, apiKey, callback, classOnly = false)->
       , cb
 
     # max concurrent uploads
-    maxConcurrent: 3
+    maxConcurrent: process.env.MAX_CONCURRENT || 3
 
     ###
     # Upload all the files
@@ -129,14 +133,75 @@ module.exports = (themeRoot, apiKey, callback, classOnly = false)->
     # @param {Object} policy object
     # @param {Function} callback
     ###
-    uploadFile: (policy, cb)=>
-      filePath = path.join(
+    uploadFile: (policy, callback)=>
+      fPath = false
+      async.waterfall [
+        # get the file path and generate
+        # gzip version of file if necessary
+        ( (cb) => @getFilePath(policy, cb))
+        # upload file to s3
+        ( (filePath, cb) =>
+          fPath = filePath
+          s3 = new @S3Upload filePath, policy, cb
+        )
+        # remove any gzip file
+        # created temporarily
+        ( (result, cb) => @deleteGzipFile(policy, fPath, cb))
+      ], callback
+
+    ###
+    # Gets the file path
+    # and gzip encodes
+    # it if specified in policy header
+    # @param {Object} policy
+    # @param {Function} callback (err, filePath) ->
+    ###
+    getFilePath: (policy, cb) =>
+      localPath = path.join(
         @themeRoot
         'dist'
         policy.localPath
       )
-      s3 = new @S3Upload filePath
-      , policy, cb
+
+      unless policy.gzip
+        return cb(null, localPath)
+      # now gzip file
+      tmpLocation = path.join(
+        os.tmpdir()
+        'stchf-' + uuid.v1()
+      )
+      input = fs.createReadStream(localPath)
+      output = fs.createWriteStream(tmpLocation)
+
+      output.on 'finish', ->
+        cb null, tmpLocation
+
+      output.on 'error', cb
+      gzip = zlib.createGzip()
+
+      input.pipe(gzip)
+        .pipe(output)
+
+    ###
+    # Deletes any temporary gzip file
+    # if created
+    # @param {Object} policy
+    # @param {String} filepath
+    # @param {Function} callback
+    ###
+    deleteGzipFile: (policy, filePath, cb) =>
+      # ignore if gzip not specified
+      unless policy.gzip
+        return cb(null, true)
+
+      # make sure that filepath contains stchf
+      # so we don't accidentally delete
+      # a user file
+      unless filePath.match /stchf/
+        return cb(null, true)
+
+      # try and delete the file
+      fs.unlink filePath, cb
 
 
   if classOnly

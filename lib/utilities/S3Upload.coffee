@@ -14,8 +14,10 @@ request = require 'request'
 fs = require 'fs'
 async = require 'async'
 log = require('single-line-log').stdout
+_ = require 'lodash'
 
 FetchJSON = require './FetchJSON'
+PercentLogger = require './PercentLogger'
 
 class S3Upload
 
@@ -72,21 +74,25 @@ class S3Upload
 
     opts = @makeOptions(fileSize)
 
-    @log "Uploading #{@filePath} ..."
+    @log "Uploading to #{@policy.key} ..."
 
     # instantiate the request
     r = request opts
     , (err, message, body)=>
+      # kill logger
+      if @logger
+        @logger.destroy()
+
       success = err is null and (
         message.statusCode is 200 or
         message.statusCode is 204
       )
       if success
         @completed = true
-        @log "Uploaded #{@filePath} successfully"
+        @log "Uploaded #{@policy.key} successfully"
         return cb(null, true)
 
-      @log "Failed to upload #{@filePath}"
+      @log "Failed to upload #{@filePath} (#{@policy.key})"
       , (err || message.statusCode), body
 
       # retry if below retry limit
@@ -99,7 +105,7 @@ class S3Upload
       @completed = true
       cb(
         new Error(
-          "Failed to upload #{@filePath}"
+          "Failed to upload #{@filePath} (#{@policy.key})"
         )
       )
 
@@ -136,30 +142,16 @@ class S3Upload
         policy: @policy.policy
         signature: @policy.signature
         "Content-Type": @policy['Content-Type']
-        "Content-Length": fileSize
-        file: fs.createReadStream(@filePath)
 
-  # delay in between
-  # each upload progress request
-  pollDelay: 250
+    if @policy.gzip
+      options.formData["Content-Encoding"] = 'gzip'
 
-  ###
-  # Gets Percent complete of upload
-  # @param {Request}
-  # @param {Integer} total filesize
-  ###
-  getPercent: (request, fileSize) =>
-    return 101 if @completed
-    return 0 unless 'req' of request
-    return 0 unless 'connection' of request.req
-    return 0 if parseInt(fileSize) is 0
-    sent = parseInt(
-      request.req.connection._bytesDispatched
-    )
-    Math.ceil(
-      (sent / fileSize) * 100
-    )
+    _.extend options.formData
+    ,
+      "Content-Length": fileSize
+      file: fs.createReadStream(@filePath)
 
+    options
 
   ###
   # Writes out percentage of upload
@@ -168,16 +160,11 @@ class S3Upload
   # @param {Int} total filesize
   ###
   logUpload: (request, fileSize) =>
-    percent = @getPercent request, fileSize
-    return if percent > 100
-    msg = "#{@filePath} [#{percent}%]"
-    @singleLineLog msg
-
-    return if percent is 100
-
-    setTimeout =>
-      @logUpload request, fileSize
-    , @pollDelay
+    @logger = new PercentLogger("#{@policy.key} "
+    ,
+      request: request
+      fileSize: fileSize
+    )
 
 
   log: (message, err) ->

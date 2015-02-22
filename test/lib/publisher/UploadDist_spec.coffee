@@ -3,6 +3,7 @@ UploadDist = require(
 )(null,null,null, true)
 
 nock = require 'nock'
+fs = require 'fs'
 
 describe "UploadDist", ->
 
@@ -22,7 +23,7 @@ describe "UploadDist", ->
       uploadDist.getFileList (err, files) ->
         throw err if err
         expect(files.length)
-          .toBe 2
+          .toBe 3
         done()
 
 
@@ -79,26 +80,53 @@ describe "UploadDist", ->
         expect(result[0]).toBe 'item1'
         done()
 
-    describe "uploadFile", ->
+  describe "uploadFile", ->
 
-      it "Should create the correct local path", (done)->
+    it "Should create the correct local path", (done)->
 
-        class S3Test
-          constructor: (path, policy, cb) ->
-            expect(path).toBe(
-              __dirname + '/dist/item.txt'
-            )
-            expect(policy.policy).toBe 'policy'
-            cb()
+      class S3Test
+        constructor: (path, policy, cb) ->
+          expect(path).toBe(
+            __dirname + '/dist/item.txt'
+          )
+          expect(policy.policy).toBe 'policy'
+          cb(true)
 
-        uploadDist.S3Upload = S3Test
-        uploadDist.themeRoot = __dirname
+      uploadDist.S3Upload = S3Test
+      uploadDist.themeRoot = __dirname
 
-        uploadDist.uploadFile
-          policy: 'policy'
-          localPath: 'item.txt'
-        , (err, res) ->
-          done()
+      uploadDist.uploadFile
+        policy: 'policy'
+        localPath: 'item.txt'
+        gzip: false
+      , (err, res) ->
+        throw err if err
+        done()
+
+    it "Should gzip encode javascript files", (done)->
+      tempPath = false
+      class S3Test
+        constructor: (path, policy, cb) ->
+          tempPath = path
+          size = fs.statSync(path).size
+          expect(size).toBe 57
+          cb(true)
+
+      uploadDist.S3Upload = S3Test
+      uploadDist.themeRoot = __dirname + '/../../fixtures'
+
+      uploadDist.uploadFile
+        policy: 'policy'
+        gzip: true
+        localPath: 'test.js'
+      , (err, res) ->
+        throw err if err
+        expect(tempPath)
+          .not.toBe false
+        expect(fs.existsSync(tempPath))
+          .toBe false
+        done()
+
 
 
 

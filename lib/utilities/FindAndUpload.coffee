@@ -86,7 +86,7 @@ class FindAndUpload
     uploadFiles: (files, cb) =>
       # limit concurrent
       # connections to 3
-      maxConcurrent = 3
+      maxConcurrent = process.env.MAX_CONCURRENT || 3
 
       currentFile = 0
       unless files.length

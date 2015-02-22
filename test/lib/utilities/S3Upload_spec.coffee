@@ -3,6 +3,7 @@ S3Upload = require(
 )
 nock = require 'nock'
 fs = require 'fs'
+_ = require 'lodash'
 
 describe "S3Upload", ->
 
@@ -15,6 +16,7 @@ describe "S3Upload", ->
     signature: 'signature'
     "Content-Type": "contenttype"
     bucket: 'test'
+    gzip: false
 
   beforeEach ->
 
@@ -62,42 +64,17 @@ describe "S3Upload", ->
       expect(opts['Content-Type']).toBe 'contenttype'
       expect(opts['Content-Length']).toBe 29
 
+    it "Should add content encoding if gzip specified", ->
+      s3.policy = _.clone examplePolicy
+      s3.policy.gzip = true
+      s3.acl = 'public-read'
 
+      s3.filePath = __dirname + '/../../fixtures/' +
+        'test.js.gz'
 
-  describe "logUpload", ->
-    it "Should call logUpload until uploaded", (done)->
-      connection =
-        _bytesDispatched: 0
-      r =
-        req:
-          connection: connection
-
-      s3.pollDelay = 20
-
-
-      totalCalls = 0
-
-      s3.filePath = 'testFile.txt'
-
-      s3.singleLineLog = (msg) ->
-        totalCalls++
-
-      add50 = ->
-        return if connection._bytesDispatched > 200
-        setTimeout ->
-          connection._bytesDispatched+= 50
-          add50()
-        , 10
-
-      add50()
-
-      setTimeout ->
-        expect(totalCalls).toBeGreaterThan 2
-        done()
-      , 150
-
-
-      s3.logUpload r, 200
+      res = s3.makeOptions(59)
+      expect(res.formData['Content-Encoding'])
+        .toBe 'gzip'
 
   describe "e2e", ->
 

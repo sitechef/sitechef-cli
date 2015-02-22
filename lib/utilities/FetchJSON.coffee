@@ -13,6 +13,7 @@ deepExtend = require 'deep-extend'
 request = require 'request'
 _ = require 'lodash'
 CustomerError = require '../errors/CustomerError'
+PercentLogger = require './PercentLogger'
 
 ###
 # @param {Object} config
@@ -51,8 +52,12 @@ module.exports = (config, callback, classOnly = false) ->
     ###
     fetch: =>
       requestOpts = @buildOptions()
-      request requestOpts
+      r = request requestOpts
       , (err, res, body)=>
+        # kill logger if logging
+        if @logger
+          @logger.destroy()
+
         return @callback(err) if err
         if res.statusCode is 403
           # if it's 403 error, stop all work
@@ -83,6 +88,22 @@ module.exports = (config, callback, classOnly = false) ->
             return @callback(er, body)
 
         @callback null, body
+      # dont measure progress
+      # if get request
+      return if @opts.method is 'GET'
+      if @opts.body and _.isString(@opts.body)
+        @logUpload(r, @opts.body.length) if @opts.body
+
+    ###
+    # Logs the progress
+    # @param {Object} request
+    # @param {Integer} filesize
+    ###
+    logUpload: (req, len) =>
+      @logger = new PercentLogger( "Uploading"
+        request: req
+        fileSize: len
+      )
 
     ###
     # @return {Object}
