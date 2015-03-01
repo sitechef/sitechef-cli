@@ -1,6 +1,8 @@
 SiteChef CLI
 ============
 
+[![Join the chat at https://gitter.im/sitechef/sitechef-cli](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sitechef/sitechef-cli?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 The SiteChef CLI simplifies the process of creating, editing and publishing
 themes on SiteChef.
 
