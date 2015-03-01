@@ -88,6 +88,7 @@ class PercentLogger
     diff = @percent - prevPercent
     return if @percent > 100
 
+    @log(@message, "[#{@percent}%]") if @percent > 0
     @bar.tick(diff) if diff > 0
 
     return if @percent is 100
@@ -95,6 +96,14 @@ class PercentLogger
     @timeout = setTimeout =>
       @logUpload request, fileSize
     , @opts.pollDelay
+
+
+  ###
+  # Writes to the console
+  ###
+  log: (message) =>
+    console.log(message)
+
 
   ###
   # Destroys the current instance

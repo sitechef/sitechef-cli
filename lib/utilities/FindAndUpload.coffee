@@ -100,7 +100,22 @@ class FindAndUpload
           "#{file} - " +
           "[#{currentFile} / #{files.length}]"
         )
-        @uploadFile file, callback
+        counter = 0
+        runUpload = false
+
+        doneCb = (err, out) =>
+          return callback(null, out) unless err
+          counter++
+          if counter > 3
+            return callback(err)
+          # try again
+          @log "Retrying #{currentFile}"
+          runUpload()
+
+        runUpload = =>
+          @uploadFile file, doneCb
+        runUpload()
+
       , cb
 
     ###
