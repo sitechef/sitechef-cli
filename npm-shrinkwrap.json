@@ -1,6 +1,6 @@
 {
   "name": "sitechef",
-  "version": "0.0.6",
+  "version": "0.0.12",
   "dependencies": {
     "adm-zip": {
       "version": "0.4.4",
@@ -477,6 +477,11 @@
       "version": "1.1.0",
       "from": "minimist@"
     },
+    "moment": {
+      "version": "2.9.0",
+      "from": "moment@",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.9.0.tgz"
+    },
     "nunjucks": {
       "version": "1.1.0",
       "from": "nunjucks@1.1.0",
@@ -508,6 +513,11 @@
           "from": "minimist@~0.0.1"
         }
       }
+    },
+    "progress": {
+      "version": "1.1.8",
+      "from": "progress@",
+      "resolved": "https://registry.npmjs.org/progress/-/progress-1.1.8.tgz"
     },
     "request": {
       "version": "2.50.0",

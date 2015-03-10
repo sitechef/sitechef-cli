@@ -30,7 +30,7 @@ class PercentLogger
     ###
     # @var {Integer} poll delay (ms)
     ###
-    pollDelay: 100
+    pollDelay: 50
 
   ###
   # @param {String} message to appear before %
@@ -51,7 +51,7 @@ class PercentLogger
   ###
   launch: =>
     @bar = new @Progress( @message + ' [:bar] :percent'
-      complete: '='
+    ,
       width: 20
       total: 100
     )
@@ -83,15 +83,15 @@ class PercentLogger
   # @param {Int} total filesize
   ###
   logUpload: (request, fileSize) =>
+    return if @bar.complete
     prevPercent = @percent
     @percent = @getPercent request, fileSize
     diff = @percent - prevPercent
-    return if @percent > 100
+    return @bar.tick(100) if @percent > 100
 
-    @log(@message, "[#{@percent}%]") if @percent > 0
     @bar.tick(diff) if diff > 0
 
-    return if @percent is 100
+    return @bar.tick(100) if @percent is 100
 
     @timeout = setTimeout =>
       @logUpload request, fileSize
