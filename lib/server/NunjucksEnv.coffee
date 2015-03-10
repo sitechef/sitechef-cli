@@ -55,6 +55,7 @@ class NunjucksEnv
     # and escaped of html backslashes
     ###
     json_encode: (val) ->
+      return JSON.stringify(val) unless val?
       JSON.stringify(val)
         .replace(/\//g, '\\/')
 
@@ -71,7 +72,6 @@ class NunjucksEnv
     format_date: (val, format, inputFormat = "YYYY-MM-DD HH:mm:ss") ->
       return val unless typeof val is 'string'
       m = new moment(val, inputFormat)
-      console.log m
       m.format(format)
 
   ###
