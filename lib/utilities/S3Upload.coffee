@@ -17,6 +17,7 @@ log = require('single-line-log').stdout
 _ = require 'lodash'
 
 FetchJSON = require './FetchJSON'
+PercentLogger = require './PercentLogger'
 
 class S3Upload
 
@@ -78,6 +79,10 @@ class S3Upload
     # instantiate the request
     r = request opts
     , (err, message, body)=>
+      # kill logger
+      if @logger
+        @logger.destroy()
+
       success = err is null and (
         message.statusCode is 200 or
         message.statusCode is 204
@@ -148,28 +153,6 @@ class S3Upload
 
     options
 
-  # delay in between
-  # each upload progress request
-  pollDelay: 250
-
-  ###
-  # Gets Percent complete of upload
-  # @param {Request}
-  # @param {Integer} total filesize
-  ###
-  getPercent: (request, fileSize) =>
-    return 101 if @completed
-    return 0 unless 'req' of request
-    return 0 unless 'connection' of request.req
-    return 0 if parseInt(fileSize) is 0
-    sent = parseInt(
-      request.req.connection._bytesDispatched
-    )
-    Math.ceil(
-      (sent / fileSize) * 100
-    )
-
-
   ###
   # Writes out percentage of upload
   # to stdout
@@ -177,16 +160,11 @@ class S3Upload
   # @param {Int} total filesize
   ###
   logUpload: (request, fileSize) =>
-    percent = @getPercent request, fileSize
-    return if percent > 100
-    msg = "#{@filePath} [#{percent}%]"
-    @singleLineLog msg
-
-    return if percent is 100
-
-    setTimeout =>
-      @logUpload request, fileSize
-    , @pollDelay
+    @logger = new PercentLogger("#{@policy.key} "
+    ,
+      request: request
+      fileSize: fileSize
+    )
 
 
   log: (message, err) ->

@@ -76,43 +76,6 @@ describe "S3Upload", ->
       expect(res.formData['Content-Encoding'])
         .toBe 'gzip'
 
-
-
-  describe "logUpload", ->
-    it "Should call logUpload until uploaded", (done)->
-      connection =
-        _bytesDispatched: 0
-      r =
-        req:
-          connection: connection
-
-      s3.pollDelay = 20
-
-
-      totalCalls = 0
-
-      s3.filePath = 'testFile.txt'
-
-      s3.singleLineLog = (msg) ->
-        totalCalls++
-
-      add50 = ->
-        return if connection._bytesDispatched > 200
-        setTimeout ->
-          connection._bytesDispatched+= 50
-          add50()
-        , 10
-
-      add50()
-
-      setTimeout ->
-        expect(totalCalls).toBeGreaterThan 2
-        done()
-      , 150
-
-
-      s3.logUpload r, 200
-
   describe "e2e", ->
 
     fixtures = __dirname + '/../../fixtures/'

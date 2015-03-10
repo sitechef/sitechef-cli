@@ -86,7 +86,7 @@ class FindAndUpload
     uploadFiles: (files, cb) =>
       # limit concurrent
       # connections to 3
-      maxConcurrent = 3
+      maxConcurrent = process.env.MAX_CONCURRENT || 3
 
       currentFile = 0
       unless files.length
@@ -100,7 +100,22 @@ class FindAndUpload
           "#{file} - " +
           "[#{currentFile} / #{files.length}]"
         )
-        @uploadFile file, callback
+        counter = 0
+        runUpload = false
+
+        doneCb = (err, out) =>
+          return callback(null, out) unless err
+          counter++
+          if counter > 3
+            return callback(err)
+          # try again
+          @log "Retrying #{currentFile}"
+          runUpload()
+
+        runUpload = =>
+          @uploadFile file, doneCb
+        runUpload()
+
       , cb
 
     ###
@@ -145,6 +160,7 @@ class FindAndUpload
         body: contents.toString()
         json: false
         url: url
+        message: 'Uploading ' + path
       , cb
 
     ###

@@ -11,6 +11,7 @@
 # @copyright Campbell Morgan, SiteChef, 2014
 # @author Campbell Morgan <dev@sitechef.co.uk>
 ###
+moment = require 'moment'
 
 class NunjucksEnv
 
@@ -46,6 +47,7 @@ class NunjucksEnv
     ###
     nl2br: (val) ->
       return val unless val?
+      return val unless typeof val is 'string'
       val.replace /\n/g, '<br>'
 
     ###
@@ -53,7 +55,6 @@ class NunjucksEnv
     # and escaped of html backslashes
     ###
     json_encode: (val) ->
-      return val unless val?
       JSON.stringify(val)
         .replace(/\//g, '\\/')
 
@@ -61,8 +62,17 @@ class NunjucksEnv
     # Strips Tags from input string
     ###
     striptags: (val) ->
-      return val unless val?
+      return val unless typeof val is 'string'
       val.replace /\<[^\>]+\>/g, ''
+
+    ###
+    # Formats a date
+    ###
+    format_date: (val, format, inputFormat = "YYYY-MM-DD HH:mm:ss") ->
+      return val unless typeof val is 'string'
+      m = new moment(val, inputFormat)
+      console.log m
+      m.format(format)
 
   ###
   # Extends this class

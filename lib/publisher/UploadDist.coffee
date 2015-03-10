@@ -114,7 +114,7 @@ module.exports = (themeRoot, apiKey, callback, classOnly = false)->
       , cb
 
     # max concurrent uploads
-    maxConcurrent: 3
+    maxConcurrent: process.env.MAX_CONCURRENT || 3
 
     ###
     # Upload all the files
