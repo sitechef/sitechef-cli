@@ -20,7 +20,8 @@ describe "PercentLogger", ->
     mockRequest =
       req:
         connection:
-          _bytesDispatched: 0
+          socket:
+            _bytesDispatched: 0
 
   describe "getPercent", ->
 
@@ -36,7 +37,7 @@ describe "PercentLogger", ->
         .toBe 0
 
     it "should return percent of fileSize if req specified", ->
-      mockRequest.req.connection._bytesDispatched = 20
+      mockRequest.req.connection.socket._bytesDispatched = 20
 
       # 101 put in to test Math.ceil
       expect(pL.getPercent(mockRequest, 101))
@@ -51,7 +52,7 @@ describe "PercentLogger", ->
 
       # add 10 bytes to bytes dispatched
       timer = setInterval ->
-        mockRequest.req.connection._bytesDispatched+= 10
+        mockRequest.req.connection.socket._bytesDispatched+= 10
       , 10
 
       pL.opts =

@@ -66,9 +66,12 @@ class PercentLogger
     return 101 if @completed
     return 0 unless 'req' of request
     return 0 unless 'connection' of request.req
+    return 0 unless 'socket' of request.req.connection
     return 0 if parseInt(fileSize) is 0
     dispatched = request.req
-      .connection._bytesDispatched
+      .connection
+      .socket
+      ._bytesDispatched
     return 0 unless dispatched
     sent = parseInt(dispatched)
     Math.ceil(

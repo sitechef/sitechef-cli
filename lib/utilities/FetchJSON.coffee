@@ -40,6 +40,7 @@ module.exports = (config, callback, classOnly = false) ->
       body: false
       json: true
       require200: true
+      message: ''
 
     constructor: (config, @callback) ->
       @opts = deepExtend {}, @defaults, config
@@ -100,7 +101,9 @@ module.exports = (config, callback, classOnly = false) ->
     # @param {Integer} filesize
     ###
     logUpload: (req, len) =>
-      @logger = new PercentLogger( "Uploading"
+      message = "Uploading " + @opts.message
+      @logger = new PercentLogger(message
+      ,
         request: req
         fileSize: len
       )

@@ -160,6 +160,7 @@ class FindAndUpload
         body: contents.toString()
         json: false
         url: url
+        message: 'Uploading ' + path
       , cb
 
     ###
