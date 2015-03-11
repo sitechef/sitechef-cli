@@ -30,8 +30,13 @@ module.exports = ->
     # @constructor
     # @param {String|Boolean} absolute path of theme directory
     # @param {Integer} express port number
+    # @param {String} environment
     ###
-    constructor: (@themeRoot = false, @port = 3999) ->
+    constructor: (
+      @themeRoot = false,
+      @port = 3999,
+      @environment= 'development'
+    ) ->
 
       unless @themeRoot
         @themeRoot = @_getCWD()
@@ -146,6 +151,9 @@ module.exports = ->
       return next() unless url of @data
 
       pageData = @data[url]
+
+      # add environment variable
+      pageData.environment = @environment
 
       # if it's an xhttprequest
       # return json format

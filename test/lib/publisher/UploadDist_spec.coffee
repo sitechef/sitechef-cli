@@ -90,7 +90,7 @@ describe "UploadDist", ->
             __dirname + '/dist/item.txt'
           )
           expect(policy.policy).toBe 'policy'
-          cb(true)
+          cb(null, true)
 
       uploadDist.S3Upload = S3Test
       uploadDist.themeRoot = __dirname
@@ -110,7 +110,7 @@ describe "UploadDist", ->
           tempPath = path
           size = fs.statSync(path).size
           expect(size).toBe 57
-          cb(true)
+          cb(null, true)
 
       uploadDist.S3Upload = S3Test
       uploadDist.themeRoot = __dirname + '/../../fixtures'

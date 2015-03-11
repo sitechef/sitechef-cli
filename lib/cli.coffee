@@ -21,6 +21,10 @@ module.exports = (overrides) ->
   packageData = JSON.parse(
     fs.readFileSync(__dirname + '/../package.json')
   )
+  # add the version to the global
+  # instance so it can be used in requests
+  GLOBAL.SITECHEF_VERSION = packageData.version
+
   instructions = [
     "SiteChef Command Line Utility Version " + packageData.version
     ""
@@ -33,10 +37,11 @@ module.exports = (overrides) ->
     "       If no directory name specified it will generate "
     "       from the theme name"
     ""
-    "  sitechef serve [<port>]"
+    "  sitechef serve [-p <port>] [-e <development|production>"
     ""
     "       Serves the template at http://localhost:3999/ "
-    "       unless a port is specified"
+    "       -p specify override port eg 9000  "
+    "       -e override environment for templating eg production "
     ""
     "  sitechef publish"
     "       "
@@ -105,16 +110,17 @@ module.exports = (overrides) ->
 
     when 'serve'
       port = null
-      if argv._.length > 1
-        port = argv._[1]
+      environment = null
+      port = argv.p if argv.p
+      environment = argv.e if argv.e
 
-      server = new Server cwd, port
+      server = new Server cwd, port, environment
 
     when 'publish'
       console.log "\n\nPublishing Theme...\n\n"
       publish = new Publisher cwd
 
-    when 'update-data'
+    when 'update-data', 'data-update', 'update'
       console.log "\n\nFetching the latest data file...\n\n"
       Updater(cwd)
 

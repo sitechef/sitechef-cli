@@ -86,7 +86,10 @@ module.exports = (config, callback, classOnly = false)->
     ###
     getProgress: (src) =>
       headers = if @opts.apiKey
-      then {"X-Api-Auth": @opts.apiKey}
+      then {
+        "X-Api-Auth": @opts.apiKey
+        "X-Sitechef-Version": GLOBAL.SITECHEF_VERSION
+      }
       else {}
       options =
         url: src

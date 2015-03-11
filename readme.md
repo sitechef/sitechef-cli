@@ -68,6 +68,14 @@ Navigate to your theme directory in the Terminal / Command
       sitechef data-update
 
 
+##CLI Options
+
+###`sitechef serve [options...]`
+
+-p <int> override port number eg `sitechef serve -p 8080`
+
+-e <string> override environment default `development`, alternative: `production` e.g. `sitechef serve -e production`
+
 #Templating
 
 Full documentation for using this CLI and creating SiteChef Themes
