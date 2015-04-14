@@ -153,6 +153,8 @@ module.exports = ->
 
       pageData = @data[url]
 
+      pageData = @mobileCheck pageData
+
       # add environment variable
       pageData.environment = @environment
 
