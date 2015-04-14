@@ -1,6 +1,6 @@
 {
   "name": "sitechef",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Command Line Interface for editing, previewing locally and publishing SiteChef themes",
   "main": "index.js",
   "bin": {
@@ -31,6 +31,7 @@
     "lodash": "2.4.1",
     "mime": "1.2.11",
     "minimist": "1.1.0",
+    "mobile-detect": "^1.0.0",
     "moment": "^2.9.0",
     "nunjucks": "1.1.0",
     "optimist": "0.6.1",

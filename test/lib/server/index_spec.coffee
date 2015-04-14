@@ -30,6 +30,71 @@ describe "Server/index", ->
       expect(server.pagesById[29])
         .toBe undefined
 
+  describe 'updateIsMobile', ->
+
+    it "Should recurse through updating isMobile," +
+    " without affecting other nested objects", ->
+      demoData =
+        prefs: [
+          {
+            item1: 'test'
+            item2: [
+              {
+                subItem1: 'subItem'
+                isMobile: false
+              }
+            ]
+          }
+        ]
+        extra:
+          isMobile: false
+
+      result = server.updateIsMobile(demoData, true)
+
+      expect(
+        result.prefs[0].item2[0].isMobile
+      ).toBe true
+
+      expect(
+        result.extra.isMobile
+      ).toBe true
+
+
+  describe "mobileCheck", ->
+    it "should not update mobile data if not mobile", ->
+      desktopAgent = "Mozilla/5.0" +
+      "AppleWebKit/537.36 (KHTML, like Gecko) " +
+      "Chrome/40.0.0.0 Safari/537.36"
+
+      demoData =
+        isMobile: false
+
+      result = server.mobileCheck
+        headers:
+          'user-agent': desktopAgent
+      , demoData
+
+      expect(result.isMobile)
+        .toBe false
+
+    it "should set is mobile to true on a mobile user agent", ->
+      iphoneUseragent = "Mozilla/5.0 (iPhone; CPU " +
+      "iPhone OS 7_0 like Mac OS X; en-us) " +
+      "AppleWebKit/537.51.1 (KHTML, like Gecko) " +
+      "Version/7.0 Mobile/11A465 Safari/9537.53"
+
+      demoData =
+        isMobile: false
+
+      result = server.mobileCheck
+        headers:
+          'user-agent': iphoneUseragent
+      , demoData
+
+      expect(result.isMobile).toBe true
+
+
+
   describe "respond", ->
 
     it "should call next if url not found in datafile", ->

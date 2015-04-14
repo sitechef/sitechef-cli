@@ -16,6 +16,7 @@ express = require 'express'
 _ = require 'lodash'
 path = require 'path'
 async = require 'async'
+MobileDetect = require 'mobile-detect'
 fs = require 'fs'
 
 IFrameParser = require './IFrameParser'
@@ -188,10 +189,41 @@ module.exports = ->
         res.send result
 
     ###
-    # Finds a page by id
-    # from the data.json file
-    # @param {Integer} page id
+    # Checks if accessed
+    # using mobile useragent
+    # and updates page data
+    # @param {Object} Express request
+    # @param {Object} page data
+    # @return {Object} page data
     ###
+    mobileCheck: (req, data) =>
+      # check useragent string
+      md = new MobileDetect(req.headers['user-agent'])
+      return data unless md.mobile()
+      # now update every "isMobile" key to true
+      @updateIsMobile(data, true)
+
+    ###
+    # Recursively searches
+    # objects and arrays
+    # for any item with key 'isMobile'
+    # and sets to true
+    # @param {Object|Array} data
+    # @param {Boolean} value to set 'isMobile' key
+    # @return {Object|Array} data
+    ###
+    updateIsMobile: (data, isMobile = true) =>
+      return data unless typeof data is 'object'
+      _.transform data, (result, val, key) =>
+        # recurse if this is an object / array
+        if typeof val is 'object'
+          return result[key] = @updateIsMobile(val, isMobile)
+        # if this is the 'isMobile' key, set to
+        # desired value
+        if key is 'isMobile'
+          return result[key] = isMobile
+        # return whatever else already existed here
+        result[key] = val
 
     ###
     # Deal with http errors
