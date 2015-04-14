@@ -219,13 +219,16 @@ module.exports = ->
       _.transform data, (result, val, key) =>
         # recurse if this is an object / array
         if typeof val is 'object'
-          return result[key] = @updateIsMobile(val, isMobile)
+          result[key] = @updateIsMobile(val, isMobile)
+          return true
         # if this is the 'isMobile' key, set to
         # desired value
         if key is 'isMobile'
-          return result[key] = isMobile
+          result[key] = isMobile
+          return true
         # return whatever else already existed here
         result[key] = val
+        true
 
     ###
     # Deal with http errors

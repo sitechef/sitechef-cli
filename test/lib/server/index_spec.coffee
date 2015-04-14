@@ -38,9 +38,11 @@ describe "Server/index", ->
         prefs: [
           {
             item1: 'test'
+            randomItem: false
             item2: [
               {
                 subItem1: 'subItem'
+                otherData: false
                 isMobile: false
               }
             ]
@@ -54,6 +56,10 @@ describe "Server/index", ->
       expect(
         result.prefs[0].item2[0].isMobile
       ).toBe true
+
+      expect(
+        result.prefs[0].item2[0].subItem1
+      ).toBe 'subItem'
 
       expect(
         result.extra.isMobile
@@ -96,6 +102,10 @@ describe "Server/index", ->
 
 
   describe "respond", ->
+
+    beforeEach ->
+      server.mobileCheck = (r, data) ->
+        data
 
     it "should call next if url not found in datafile", ->
 
