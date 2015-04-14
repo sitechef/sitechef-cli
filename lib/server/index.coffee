@@ -153,7 +153,7 @@ module.exports = ->
 
       pageData = @data[url]
 
-      pageData = @mobileCheck pageData
+      pageData = @mobileCheck req, pageData
 
       # add environment variable
       pageData.environment = @environment
