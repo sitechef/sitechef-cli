@@ -218,7 +218,7 @@ module.exports = ->
       return data unless typeof data is 'object'
       _.transform data, (result, val, key) =>
         # recurse if this is an object / array
-        if typeof val is 'object'
+        if _.isObject(val) or _.isArray(val)
           result[key] = @updateIsMobile(val, isMobile)
           return true
         # if this is the 'isMobile' key, set to

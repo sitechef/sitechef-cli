@@ -39,6 +39,7 @@ describe "Server/index", ->
           {
             item1: 'test'
             randomItem: false
+            nullItem: null
             item2: [
               {
                 subItem1: 'subItem'
@@ -60,6 +61,10 @@ describe "Server/index", ->
       expect(
         result.prefs[0].item2[0].subItem1
       ).toBe 'subItem'
+
+      expect(
+        result.prefs[0].nullItem
+      ).toBe null
 
       expect(
         result.extra.isMobile
