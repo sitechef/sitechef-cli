@@ -49,7 +49,16 @@ module.exports = (apiKey, destination, themeDirectory, callback, overrides) ->
       FetchJSON
         url: defaults.themesHost + defaults.endpoint
         apiKey: apiKey
-      , cb
+      , (err, body) ->
+        unless err
+          return cb(null, body)
+        # if 404 error then write
+        # out error message
+        if err.status is 404
+          err.message = "No JSON snapshot found for " +
+          "the connected site - please create one at:" +
+          "https://admin.sitechef.co.uk/wizard/account"
+        cb err
     )
     # download the json
     # file to the .sitechef directory
