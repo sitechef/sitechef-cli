@@ -161,11 +161,17 @@ module.exports = (
     getPolicy: (cb) =>
       config = Defaults false
       url = config.themesHost + 'srczip'
+      if process.env.DEBUG_MODE
+        callback = (err, res) ->
+          console.log('Debug: getpolicy zip', err, res)
+          cb(err, res)
+      else
+        callback = cb
       FetchJSON
         method: 'PUT'
         url: url
         apiKey: @apiKey
-      , cb
+      , callback
 
     ###
     # Upload created zip file to S3

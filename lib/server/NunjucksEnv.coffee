@@ -25,6 +25,7 @@ class NunjucksEnv
     env = nunjucks.configure rootPath
     ,
       autoescape: true
+      watch: true
     for name, filter of @filters
       env.addFilter name, filter
     env
