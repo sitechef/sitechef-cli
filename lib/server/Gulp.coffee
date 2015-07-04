@@ -14,7 +14,6 @@
 
 exec = require('child_process').exec
 path = require 'path'
-sys = require 'sys'
 
 ###
 # @param {String} full path of the theme directory
@@ -49,7 +48,7 @@ module.exports = (themeDirectory, command=false, endCb) ->
       endCb(err || stderr || stdout)
 
   writeLine = (data) ->
-    sys.print "#{cmd} #{data}"
+    console.log "#{cmd} #{data}"
   child.stderr.on 'data', writeLine
 
   child.stdout.on 'data', writeLine
