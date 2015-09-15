@@ -77,7 +77,7 @@ module.exports = (apiKey, destination, themeDirectory, callback, overrides) ->
       preferencesSCSS = _.reduce preferences
       , (memo, val, pref) ->
         if _.isString(val)
-          content = val.replace /\n/g, ''
+          content = val.replace /[\n\']+/g, ''
           # concatenate image base path
           # with relative path of logo & favicon
           if _.indexOf(imagePathUri, pref) isnt -1
