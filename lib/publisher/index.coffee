@@ -114,7 +114,7 @@ module.exports = ->
       )
 
       try
-        unless fs.existsSync(siteChefPath)
+        unless fs.statSync(siteChefPath)
           console.log("No .sitechefrc file found at", siteChefPath)
           return @ignoreFiles = []
 

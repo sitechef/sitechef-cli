@@ -16,6 +16,7 @@ Init = require './initialiser'
 Server = require('./server')()
 Publisher = require('./publisher')()
 Updater = require './updater'
+Setup = require './setup'
 
 module.exports = (overrides) ->
   packageData = JSON.parse(
@@ -37,6 +38,12 @@ module.exports = (overrides) ->
     "       If no directory name specified it will generate "
     "       from the theme name"
     ""
+    "  sitechef setup <apikey>"
+    ""
+    "       Writes the sitechef config file and downloads the latest json"
+    "       snapshot writing data to the current directory."
+    "       Used when setting up a cloned git repo."
+    ""
     "  sitechef serve [-p <port>] [-e <development|production>"
     ""
     "       Serves the template at http://localhost:3999/ "
@@ -47,7 +54,7 @@ module.exports = (overrides) ->
     "       "
     "       Publishes your theme back to SiteChef"
     ""
-    "  sitechef update-data"
+    "  sitechef update"
     ""
     "       Updates your local data file from the latest"
     "       data on the website."
@@ -107,6 +114,19 @@ module.exports = (overrides) ->
         , results.generateFolder.path
         console.log complete.join('\n')
         process.exit()
+
+    when "setup"
+      unless argv._.length > 1
+        return sendInstructions()
+      apiKey = argv._[1]
+
+      console.log instructions[0]
+
+      console.log "\n\nWriting core sitechef files ...\n\n"
+
+      Setup cwd, apiKey
+
+
 
     when 'serve'
       port = null
