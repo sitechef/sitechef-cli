@@ -2,6 +2,7 @@ saveSnapshotFile = require '../../../lib/initialiser/saveSnapshotFile'
 
 rimraf = require 'rimraf'
 fs = require 'fs'
+exists = require '../../helpers/exists'
 
 describe "saveSnapshotFile", ->
 
@@ -30,9 +31,9 @@ describe "saveSnapshotFile", ->
         throw err if err
         expect(result).toBe themeDest
 
-        expect(fs.existsSync(themeDest))
+        expect(exists(themeDest))
           .toBe true
-        expect(fs.existsSync(themeDir + '/prefs.scss'))
+        expect(exists(themeDir + '/prefs.scss'))
           .toBe true
 
         done()

@@ -120,16 +120,16 @@ describe "UploadDist", ->
         gzip: true
         localPath: 'test.js'
       , (err, res) ->
+        exists = true
+        try
+          fs.accessSync(tempPath)
+        catch e
+          exists = false
+
         throw err if err
         expect(tempPath)
           .not.toBe false
-        expect(fs.existsSync(tempPath))
+        expect(exists)
           .toBe false
         done()
-
-
-
-
-
-
 

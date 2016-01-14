@@ -10,6 +10,8 @@ rimraf = require 'rimraf'
 AdmZip = require 'adm-zip'
 fs = require 'fs'
 
+exists = require '../../helpers/exists'
+
 describe "UploadZip", ->
 
   upload = false
@@ -89,16 +91,16 @@ describe "UploadZip", ->
         z.extractAllTo(tmpPath)
         # now check that correct files exist
         expect(
-          fs.existsSync(tmpPath + '/testFile1')
+          exists(tmpPath + '/testFile1')
         ).toBe true
         expect(
-          fs.existsSync(tmpPath + '/correctDir/subdir/file2')
+          exists(tmpPath + '/correctDir/subdir/file2')
         ).toBe true
         expect(
-          fs.existsSync(tmpPath + '/ignoreFolder/ignorefile')
+          exists(tmpPath + '/ignoreFolder/ignorefile')
         ).toBe false
         expect(
-          fs.existsSync(tmpPath + '/.gitignore')
+          exists(tmpPath + '/.gitignore')
         ).toBe true
         done()
 

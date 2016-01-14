@@ -2,6 +2,7 @@ saveTemplateFiles = require '../../../lib/initialiser/saveTemplateFiles'
 
 rimraf = require 'rimraf'
 fs = require 'fs'
+exists = require '../../helpers/exists'
 
 describe "SaveTemplateFiles", ->
 
@@ -25,7 +26,7 @@ describe "SaveTemplateFiles", ->
         throw err if err
         expect(result)
           .toBe themeDir + '/templates'
-        expect(fs.existsSync(
+        expect(exists(
           themeDir + '/templates/subdir1/test2.html'
         )).toBe true
         done()

@@ -8,6 +8,7 @@ FolderGenerate = require(
 )
 fs = require 'fs'
 rimraf = require 'rimraf'
+exists = require '../../helpers/exists'
 
 describe "FolderGenerate", ->
   folderGenerate = false
@@ -65,10 +66,10 @@ describe "FolderGenerate", ->
 
         themeRoot = themeDir + 'test-site'
 
-        expect(fs.existsSync(themeRoot))
+        expect(exists(themeRoot))
           .toBe true
 
-        expect(fs.existsSync(themeRoot + '/.sitechef'))
+        expect(exists(themeRoot + '/.sitechef'))
           .toBe true
 
         done()

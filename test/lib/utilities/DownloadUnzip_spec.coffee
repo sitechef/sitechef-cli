@@ -5,6 +5,8 @@ DownloadUnzip = require(
 )({}, {}, true)
 fs = require 'fs'
 
+exists = require '../../helpers/exists'
+
 describe "DownloadUnzip", ->
 
   downloadMock = false
@@ -67,9 +69,9 @@ describe "DownloadUnzip", ->
         throw err if err
         expect(dir)
           .toBe '/tmp/siteChefCliTest'
-        expect(fs.existsSync('/tmp/siteChefCliTest/test1.html'))
+        expect(exists('/tmp/siteChefCliTest/test1.html'))
           .toBe true
-        expect(fs.existsSync('/tmp/siteChefCliTest/subdir1/test2.html'))
+        expect(exists('/tmp/siteChefCliTest/subdir1/test2.html'))
           .toBe true
         done()
 

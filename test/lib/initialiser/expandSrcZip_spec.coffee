@@ -2,6 +2,7 @@ expandSrcZip = require '../../../lib/initialiser/expandSrcZip'
 
 rimraf = require 'rimraf'
 fs = require 'fs'
+exists = require '../../helpers/exists'
 
 describe "ExpandSrcZip", ->
 
@@ -36,10 +37,10 @@ describe "ExpandSrcZip", ->
         throw err if err
         expect(result).toBe themeDir
 
-        expect(fs.existsSync(zipDest))
+        expect(exists(zipDest))
           .toBe true
 
-        expect(fs.existsSync(themeDir + 'example.js'))
+        expect(exists(themeDir + 'example.js'))
           .toBe true
 
         done()

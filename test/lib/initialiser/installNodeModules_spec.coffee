@@ -2,6 +2,7 @@ InstallModules = require '../../../lib/initialiser/installNodeModules'
 
 rimraf = require 'rimraf'
 fs = require 'fs'
+exists = require '../../helpers/exists'
 
 describe "Install node modules", ->
 
@@ -33,7 +34,7 @@ describe "Install node modules", ->
       InstallModules themeDir
       , (err, res)->
         throw err if err
-        expect(fs.existsSync(
+        expect(exists(
           themeDir + '/node_modules/coffee-script'
         )).toBe true
         done()
