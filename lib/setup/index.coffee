@@ -25,7 +25,7 @@ module.exports = (themeRoot, apiKey) ->
   async.auto
 
     checkDirectory: (cb) ->
-      fs.access siteChefDir
+      fs.readdir siteChefDir
       , (err, res) ->
         return cb(null, false) if err
         cb(null, true)
