@@ -149,7 +149,13 @@ module.exports = ->
       then lowercaseUrl
       else req.url
 
-      return next() unless url of @data
+      comingSoon = req.path is '/_coming_soon'
+
+      unless comingSoon or url of @data
+        return next()
+
+      if comingSoon
+        url = '/'
 
       pageData = @data[url]
 
@@ -183,7 +189,11 @@ module.exports = ->
             return false unless @pagesById[id]?
             @pagesById[id]
 
-          @render 'index.html', data, cb
+          template = if comingSoon
+          then 'comingSoon.html'
+          else 'index.html'
+
+          @render template, data, cb
         )
       ], (err, result) ->
         return next(err) if err
