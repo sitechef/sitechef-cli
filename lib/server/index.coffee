@@ -90,7 +90,10 @@ module.exports = ->
       , (data, section) ->
         # ignore any items
         # that begin with '/api'
-        !section.match(/^.api/)
+        !(
+          section.match(/^.api/) or
+          section.match(/p\/\d+(\.json)?$/)
+        )
       )
       @pagesById = _.reduce(filteredPages
       , (memo, val) ->
