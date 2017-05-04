@@ -10,7 +10,8 @@
 # @copyright Campbell Morgan, SiteChef, 2014
 # @author Campbell Morgan <dev@sitechef.co.uk>
 ###
-module.exports = (message) ->
+module.exports = (message, type = 'unknown') ->
   error = new Error(message)
   error.name = "CustomerError"
+  error.type = type
   error

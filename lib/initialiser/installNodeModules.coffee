@@ -13,6 +13,7 @@
 
 childProcess = require('child_process').exec
 CustomerError = require '../errors/CustomerError'
+consts = require '../consts'
 
 fs = require 'fs'
 path = require 'path'
@@ -31,7 +32,8 @@ module.exports = (directory, callback, logOutput = true) ->
       fs.readFile path.join(directory, 'package.json')
       , (err, contents) ->
         return cb(CustomerError(
-          "Could not read package.json file for theme"
+          "Could not read package.json file for theme",
+          consts.PACKAGE_JSON_NOT_FOUND
           )
         ) if err
         try
@@ -39,7 +41,8 @@ module.exports = (directory, callback, logOutput = true) ->
         catch e
           return cb(
             CustomerError(
-              "Theme package.json corrupted."
+              "Theme package.json corrupted.",
+              consts.PACKAGE_JSON_CORRUPT
             )
           )
         cb null, data
@@ -53,6 +56,7 @@ module.exports = (directory, callback, logOutput = true) ->
         , (err, stdout, stderr)->
           return cb(new CustomerError(
             "Failed to install package.json dependencies"
+            consts.DEPENDENCY_INSTALL_FAIL
           )) if err or errorThrown
           cb()
       )

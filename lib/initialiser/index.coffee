@@ -19,6 +19,8 @@ async = require 'async'
 deepExtend = require 'deep-extend'
 path = require 'path'
 
+consts = require '../consts'
+
 ExpandSrcZip = require './expandSrcZip'
 FolderGenerate = require './folderGenerate'
 SaveThemeMeta = require './saveThemeMeta'
@@ -96,7 +98,7 @@ module.exports = (config, callback, classOnly = false) ->
 
       , (err, results) =>
         if err
-          return @handleError err
+          return @handleError err, results
         @callback null, results
 
     ###
@@ -194,11 +196,13 @@ module.exports = (config, callback, classOnly = false) ->
     ###
     # Handles Errors thrown in process
     ###
-    handleError: (err) =>
+    handleError: (err, results) =>
       # if it's a customer error
       # write out message and exit
       if err and 'name' of err and err.name is 'CustomerError'
-        console.error err.message
+        if err.type is consts.DEPENDENCY_INSTALL_FAIL
+          console.error err.message
+          return @callback results
         return process.exit()
 
       # otherwise callback error
