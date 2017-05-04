@@ -24,7 +24,7 @@ module.exports = (overrides) ->
   )
   # add the version to the global
   # instance so it can be used in requests
-  GLOBAL.SITECHEF_VERSION = packageData.version
+  global.SITECHEF_VERSION = packageData.version
 
   instructions = [
     "SiteChef Command Line Utility Version " + packageData.version

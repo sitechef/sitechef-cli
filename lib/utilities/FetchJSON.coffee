@@ -129,7 +129,7 @@ module.exports = (config, callback, classOnly = false) ->
       return {} unless @opts.apiKey
       {
         "X-Api-Auth": @opts.apiKey
-        "X-Sitechef-Version": GLOBAL.SITECHEF_VERSION
+        "X-Sitechef-Version": global.SITECHEF_VERSION
       }
 
 
