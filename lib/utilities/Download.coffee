@@ -64,8 +64,9 @@ module.exports = (config, callback, classOnly = false)->
         .on('progress', (state) =>@writeProgress(state))
         .pipe(fs.createWriteStream(destination))
         .on('error', cb)
-        .on 'close', (err) ->
+        .on 'close', (err) =>
           return cb(err) if err
+          @writeProgress(percent:1)
           cb null, destination
 
     ###
@@ -78,7 +79,8 @@ module.exports = (config, callback, classOnly = false)->
       then @opts.description
       else 'Downloading zip file '
 
-      message = "#{description} [#{state.percent}%]"
+      percent = parseInt(state.percent * 100)
+      message = "#{description} [#{percent}%]"
       @log message
 
     ###
@@ -88,7 +90,7 @@ module.exports = (config, callback, classOnly = false)->
       headers = if @opts.apiKey
       then {
         "X-Api-Auth": @opts.apiKey
-        "X-Sitechef-Version": GLOBAL.SITECHEF_VERSION
+        "X-Sitechef-Version": global.SITECHEF_VERSION
       }
       else {}
       options =
