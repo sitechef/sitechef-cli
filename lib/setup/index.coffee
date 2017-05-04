@@ -30,16 +30,16 @@ module.exports = (themeRoot, apiKey) ->
         return cb(null, false) if err
         cb(null, true)
 
-    makeDirectory: ['checkDirectory', (cb, results) ->
+    makeDirectory: ['checkDirectory', (results, cb) ->
       return cb() if results.checkDirectory
       fs.mkdir siteChefDir, cb
     ]
 
-    writeMeta: ['makeDirectory', (cb, results) ->
+    writeMeta: ['makeDirectory', (results, cb) ->
       ServiceMeta apiKey, themeRoot, cb
     ]
 
-    saveSnapshot: ['makeDirectory', (cb, results) ->
+    saveSnapshot: ['makeDirectory', (results, cb) ->
       dest = path.join siteChefDir
       , 'data.json'
 

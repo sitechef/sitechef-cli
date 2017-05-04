@@ -54,11 +54,11 @@ module.exports = (config, callback, classOnly = false)->
         downloadZip: (cb) =>
           @downloadZip cb
 
-        expandZip: ['downloadZip', (cb, results) =>
+        expandZip: ['downloadZip', (results, cb) =>
           @expandZip results.downloadZip, cb
         ]
 
-        removeZip: ['expandZip', (cb, results) =>
+        removeZip: ['expandZip', (results, cb) =>
           @removeZip results.downloadZip, cb
         ]
       , (err, results) =>

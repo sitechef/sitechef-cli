@@ -86,7 +86,7 @@ module.exports = (
         upload: [
           'zip'
           "policy"
-          (cb, results) =>
+          (results, cb) =>
             @uploadToS3(
               results.policy
               results.zip
@@ -96,7 +96,7 @@ module.exports = (
 
         cleanup: [
           "upload"
-          (cb, results) =>
+          (results, cb) =>
             @cleanup cb
         ]
       , (err, results) =>

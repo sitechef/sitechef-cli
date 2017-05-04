@@ -70,27 +70,27 @@ module.exports = (config, callback, classOnly = false) ->
         generateFolder: (cb) =>
           @generateFolder cb
 
-        saveMeta: ['generateFolder', (cb, results) =>
+        saveMeta: ['generateFolder', (results, cb) =>
           @saveMeta results.generateFolder, cb
         ]
 
-        expandSrcZip: ['generateFolder', (cb, results) =>
+        expandSrcZip: ['generateFolder', (results, cb) =>
           @expandSrcZip results.generateFolder.path, cb
         ]
 
-        saveSnapshot: ['generateFolder', (cb, results) =>
+        saveSnapshot: ['generateFolder', (results, cb) =>
           @saveSnapshot results.generateFolder.path, cb
         ]
 
-        writeServiceMeta: ['generateFolder', (cb, results) =>
+        writeServiceMeta: ['generateFolder', (results, cb) =>
           @writeServiceMeta results.generateFolder.path, cb
         ]
 
-        saveTemplateFiles: ['generateFolder', (cb, results) =>
+        saveTemplateFiles: ['generateFolder', (results, cb) =>
           @saveTemplateFiles results.generateFolder.path, cb
         ]
 
-        installModules: ['expandSrcZip', (cb, results) =>
+        installModules: ['expandSrcZip', (results, cb) =>
           @installModules results.generateFolder.path, cb
         ]
 
