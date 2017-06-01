@@ -30,11 +30,11 @@ class FindAndUpload
     baseDir: 'scss'
 
     constructor: (@themeRoot, @apiKey, @callback)->
-      @start()
       @directoryRoot = path.join(
         @themeRoot
         @baseDir
       )
+      @start()
 
     ###
     # Coordinates file search
