@@ -42,7 +42,7 @@ describe "DownloadUnzip", ->
       downloadMock.opts =
         description: 'Description'
 
-      downloadMock.writeProgress percent:100
+      downloadMock.writeProgress percent:1
 
   describe "e2e", ->
 

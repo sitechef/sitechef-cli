@@ -19,7 +19,6 @@ async = require 'async'
 MobileDetect = require 'mobile-detect'
 fs = require 'fs'
 
-IFrameParser = require './IFrameParser'
 Template = require './Template'
 Gulp = require './Gulp'
 
@@ -44,6 +43,7 @@ module.exports = ->
 
       @readSiteChefRC()
       @loadDataFile()
+      @loadCustomDataFile()
       @filterPagesById()
       @runGulp()
       @generateApp()
@@ -78,6 +78,41 @@ module.exports = ->
           "Could not read data file. Try downloading again"
         )
         # exit now
+        process.exit(1)
+
+    ###
+    # Loads custom data file
+    # if it exists
+    #
+    # Format of `sitechefMockAPI.json`:
+    # {
+    #   "GET=/route-override": { // ie <METHOD>=<uri>
+    #     "templateName": "myTemplate.html",
+    #     "status": 200, // optional
+    #     "merge": true, // if false, data below is only response
+    #     "data": {
+    #       "item1": "item2"
+    #     }
+    #   }
+    # }
+    ###
+    loadCustomDataFile: =>
+      dataFilePath = path.join @themeRoot
+      , 'sitechefMockAPI.json'
+      try
+        fileContents = fs.readFileSync(dataFilePath)
+      catch e
+        # file not found / not readable
+        # so set customData empty
+        @customData = {}
+        return
+
+      try
+        @customData = JSON.parse(fileContents)
+      catch e
+        console.error(
+          "Failed to parse JSON of your custom data file"
+        )
         process.exit(1)
 
     ###
@@ -145,63 +180,88 @@ module.exports = ->
     # Responds to all routes
     ###
     respond : (req, res, next) =>
-      lowercaseUrl = req.url.toLowerCase()
-        .replace /([a-zA-Z])\/$/, '$1'
 
-      url = if lowercaseUrl of @data
-      then lowercaseUrl
-      else req.url
+      {data, templateName, status} = @getData(req)
 
-      comingSoon = req.path is '/_coming_soon'
-
-      unless comingSoon or url of @data
-        return next()
-
-      if comingSoon
-        url = '/'
-
-      pageData = @data[url]
-
-      pageData = @mobileCheck req, pageData
-
-      # add environment variable
-      pageData.environment = @environment
+      return next() unless data
 
       # if it's an xhttprequest
       # return json format
       if req.xhr
-        unless 'widgets' of pageData
-          return res.json pageData
-        pData =
-          content: pageData
-        return @renderIframes(pData
-        , (err, data) ->
-          return next(err) if err
-          res.json data.content
-        )
+        return res
+          .status(status)
+          .json(data)
 
-      async.waterfall [
-        ((cb) =>
-          @renderIframes pageData, cb
-        )
-        ((data, cb) =>
-          # function for getting
-          # page
-          data.get_page = (id) =>
-            return false unless id?
-            return false unless @pagesById[id]?
-            @pagesById[id]
+      # function for getting
+      # page
+      data.get_page = (id) =>
+        return false unless id?
+        return false unless @pagesById[id]?
+        @pagesById[id]
 
-          template = if comingSoon
-          then 'comingSoon.html'
-          else 'index.html'
-
-          @render template, data, cb
-        )
-      ], (err, result) ->
+      @render templateName, data, (err, result) ->
         return next(err) if err
 
-        res.send result
+        res.status(status).send result
+
+    cleanUrl: (req) =>
+      lowercaseUrl = req.url.toLowerCase()
+        .replace /([a-zA-Z])\/$/, '$1'
+
+      if lowercaseUrl of @data
+        return lowercaseUrl
+
+      return req.url
+
+    getData: (req) =>
+      url = @cleanUrl(req)
+
+      customData = @getCustomData(req)
+
+      coreData = @data[if customData then '/' else url]
+      if not coreData and not customData
+        return {}
+
+      coreData.environment = @environment
+
+      if customData and customData.merge is false
+        data = customData.data
+      else
+        data = _.merge {}
+        , coreData
+        , if customData
+        then customData.data
+        else {}
+
+      status = if customData then customData.status or 200
+      else 200
+
+      templateName = @getTemplateName req, customData
+
+      {
+        data,
+        status,
+        templateName,
+      }
+
+
+    getCustomData: (req) =>
+      if req.url is "/_coming_soon"
+        return {
+          templateName: 'comingSoon.html'
+          data: {}
+        }
+
+      mockString = "#{req.method}=#{req.url}"
+
+      return false unless mockString of @customData
+
+      @customData[mockString]
+
+    getTemplateName: (req, customData) =>
+      return 'index.html' unless customData
+
+      customData.templateName
 
     ###
     # Checks if accessed
@@ -255,26 +315,6 @@ module.exports = ->
           "<h1>Error</h1><h2>#{err.message}</h2>" +
           err.stack.split('<br/>')
         )
-
-    ###
-    # Parse and render local iframes
-    # if exist
-    # @param {Object} render variables
-    # @param {Function} callback (err, pageData)
-    ###
-    renderIframes: (data, cb) =>
-      return cb(null, data) unless 'content' of data
-      return cb(null, data) unless 'widgets' of data.content
-      parser = IFrameParser
-        rootDirectory: path.join(@themeRoot, 'templates')
-        data: data.content.widgets
-        html: data.content.rawBody
-        cachedHtml: data.content.body
-      , (err, renderedHtml) ->
-        return cb(err) if err
-        data.content.body = renderedHtml
-        cb null, data
-
 
     ###
     # Start the server on correct port

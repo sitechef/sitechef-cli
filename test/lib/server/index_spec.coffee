@@ -116,6 +116,9 @@ describe "Server/index", ->
 
       req =
         url: '/MYtestUrl'
+        method: 'GET'
+
+      server.customData = {}
 
       server.data =
         '/anotherUrl': {}
@@ -135,64 +138,50 @@ describe "Server/index", ->
       req =
         url: '/testURL/anotherTEST'
         xhr: true
+        method: 'GET'
 
       res=
         json: (data) ->
           expect(data.data).toBe 'test-data'
           done()
 
+      res.status = (status) ->
+        expect(status).toBe(200)
+        res
+
+      server.customData = {}
+
       server.data =
         '/testurl/anothertest': {data:'test-data'}
 
       server.respond req, res, ->
         throw new Error("Res.json not called")
-
-    it "Should call 'renderIframes' if widgets exist", (done) ->
-      req =
-        url: '/test/url'
-        xhr: true
-
-      res =
-        json: (data)->
-
-      server.renderIframes = (d, cb) ->
-        expect(d.content.data).toBe 'test-data'
-        cb null, d
-        done()
-
+  describe "getData", ->
+    it "should retrieve override from customdata", ->
+      server.customData =
+        "POST=/override_url/api": {
+          templateName: 'test.html',
+          status: 400
+          data: {
+            override: 'new'
+            specialData1: 'special'
+          }
+        }
+      server.environment = 'dev'
       server.data =
-        '/test/url':
-          data: 'test-data'
-          widgets: 'widgets'
-      server.respond req, res, ->
-        throw new Error("next called")
+        '/':
+          override: 'original'
+          first: 'first'
 
-    it "should call renderIframes then render " +
-    "and send successful result", (done) ->
+      res = server.getData({
+        method: 'POST'
+        url: '/override_url/api'
+      })
 
-      renderIframes = false
-      server.renderIframes = (data, cb) ->
-        renderIframes = true
-        cb null, data
-
-      server.render = (page, data,  cb) ->
-        expect(page).toBe 'index.html'
-        expect(data).toBe 'test-data'
-        cb null, 'templated-text'
-
-      req =
-        url: '/test'
-        xhr: false
-
-      res =
-        send: (html) ->
-          expect(html).toBe 'templated-text'
-          expect(renderIframes).toBe true
-          done()
-
-      server.data =
-        '/test': 'test-data'
-
-      server.respond req, res, ->
-        throw new Error("Next called")
+      expect(res.templateName).toBe('test.html')
+      expect(res.status).toBe(400)
+      expect(res.data.environment).toBe('dev')
+      expect(res.data.override).toBe('new')
+      expect(res.data.specialData1).toBe('special')
+      expect(res.data.first).toBe('first')
 
