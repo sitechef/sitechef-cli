@@ -187,7 +187,7 @@ module.exports = ->
 
       # if it's an xhttprequest
       # return json format
-      if req.xhr
+      if req.xhr or (req.headers.accept.indexOf('json') > -1)
         return res
           .status(status)
           .json(data)
