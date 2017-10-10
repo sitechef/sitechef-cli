@@ -44,11 +44,12 @@ module.exports = (overrides) ->
     "       snapshot writing data to the current directory."
     "       Used when setting up a cloned git repo."
     ""
-    "  sitechef serve [-p <port>] [-e <development|production>"
+    "  sitechef serve [-p <port>] [-e <development|production>] [-f <proxy hostname>]"
     ""
     "       Serves the template at http://localhost:3999/ "
     "       -p specify override port eg 9000  "
     "       -e override environment for templating eg 'production' "
+    "       -f forward unhandled requests to this hostname eg 'http://localhost:3030' "
     ""
     "       To mock up custom pages "
     "       (ie for email template development or mock apis)"
@@ -146,8 +147,9 @@ module.exports = (overrides) ->
       environment = null
       port = argv.p if argv.p
       environment = argv.e if argv.e
+      forwarding = argv.f if argv.f
 
-      server = new Server cwd, port, environment
+      server = new Server cwd, port, environment, forwarding
 
     when 'publish'
       console.log "\n\nPublishing Theme...\n\n"

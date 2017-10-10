@@ -16,6 +16,7 @@ express = require 'express'
 _ = require 'lodash'
 path = require 'path'
 async = require 'async'
+request = require 'request'
 MobileDetect = require 'mobile-detect'
 fs = require 'fs'
 
@@ -35,7 +36,8 @@ module.exports = ->
     constructor: (
       @themeRoot = false,
       @port = 3999,
-      @environment= 'development'
+      @environment= 'development',
+      @forwarding= false,
     ) ->
 
       unless @themeRoot
@@ -173,6 +175,7 @@ module.exports = ->
       @render = Template(path.join(@themeRoot, 'templates'))
 
       @app.all('*', @respond)
+      @app.use @forward
       @app.use @handleErrors
       @app
 
@@ -302,6 +305,23 @@ module.exports = ->
         # return whatever else already existed here
         result[key] = val
         true
+
+    ###
+    # Act as a reverse proxy
+    # if a forwarding hostname
+    # is specified
+    ###
+    forward: (req, res, next) =>
+      return next() unless @forwarding
+      opts = {
+        url: "#{@forwarding}#{req.url}",
+        method: req.method,
+      }
+      if req.body
+        opts.body = req.body
+
+      request(opts)
+        .pipe(res)
 
     ###
     # Deal with http errors
