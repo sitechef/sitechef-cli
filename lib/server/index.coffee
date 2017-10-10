@@ -17,6 +17,7 @@ _ = require 'lodash'
 path = require 'path'
 async = require 'async'
 request = require 'request'
+requestProxy = require 'express-request-proxy'
 MobileDetect = require 'mobile-detect'
 fs = require 'fs'
 
@@ -175,7 +176,12 @@ module.exports = ->
       @render = Template(path.join(@themeRoot, 'templates'))
 
       @app.all('*', @respond)
-      @app.use @forward
+
+      if @forwarding
+        console.log("Forwarding unhandled requests to #{@forwarding}")
+        @app.all('/*', requestProxy(
+          url: "#{@forwarding}/*"
+        ))
       @app.use @handleErrors
       @app
 
@@ -305,23 +311,6 @@ module.exports = ->
         # return whatever else already existed here
         result[key] = val
         true
-
-    ###
-    # Act as a reverse proxy
-    # if a forwarding hostname
-    # is specified
-    ###
-    forward: (req, res, next) =>
-      return next() unless @forwarding
-      opts = {
-        url: "#{@forwarding}#{req.url}",
-        method: req.method,
-      }
-      if req.body
-        opts.body = req.body
-
-      request(opts)
-        .pipe(res)
 
     ###
     # Deal with http errors
