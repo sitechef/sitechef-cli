@@ -181,6 +181,7 @@ module.exports = ->
         console.log("Forwarding unhandled requests to #{@forwarding}")
         @app.all('/*', requestProxy(
           url: "#{@forwarding}/*"
+          timeout: 30 * 1000,
         ))
       @app.use @handleErrors
       @app
