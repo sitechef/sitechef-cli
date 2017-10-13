@@ -149,6 +149,8 @@ module.exports = ->
       if 'compileCommand' of @rcContents
         compilerCmd = @rcContents.compileCommand
 
+      return unless compileCommand
+
       Gulp @themeRoot, compilerCmd
       , (data) ->
         # data already printed
