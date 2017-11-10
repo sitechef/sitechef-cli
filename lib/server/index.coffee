@@ -230,7 +230,11 @@ module.exports = ->
 
       customData = @getCustomData(req)
 
-      coreData = @data[if customData then '/' else url]
+      if customData
+        coreData = if @data[url] then @data[url] else @data['/']
+      else
+        coreData = @data[url]
+
       if not coreData and not customData
         return {}
 
