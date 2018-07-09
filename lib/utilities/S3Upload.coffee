@@ -167,9 +167,13 @@ class S3Upload
     )
 
 
-  log: (message, err) ->
-    console.error(err) if err?
-    console.log message
+  log: (message, err, others...) ->
+    if err?
+      console.error(err,others...)
+    else
+      if err
+        others.unshift(err)
+      console.log message, others...
 
   ###
   # Single line logs
