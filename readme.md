@@ -10,7 +10,7 @@ data snapshot of your site. SiteChef then compiles frontend assets and serves
 the theme at http://localhost:3999/
 
 
-#Installation
+# Installation
 
 1. Install [Node.js](http://nodejs.org/download/)
 
@@ -19,10 +19,10 @@ the theme at http://localhost:3999/
         npm install -g sitechef
 
 
-#Editing a Theme
+# Editing a Theme
 
 
-##Setup a theme for editing on SiteChef
+## Setup a theme for editing on SiteChef
 
 1. Once you have signed up to SiteChef, login at https://admin.sitechef.co.uk
 
@@ -35,7 +35,7 @@ the theme at http://localhost:3999/
 5. Click "Clone" and you will be assigned an api key
 
 
-##Downloading and running your theme locally
+## Downloading and running your theme locally
 
 1. Open the Terminal (Mac / Linux) or Command (windows)
 
@@ -53,7 +53,7 @@ the theme at http://localhost:3999/
 4. Open [http://localhost:3999/](http://localhost:3999/) in your browser
 
 
-##Publishing your theme back to sitechef
+## Publishing your theme back to sitechef
 
 
 Navigate to your theme directory in the Terminal / Command
@@ -61,32 +61,32 @@ Navigate to your theme directory in the Terminal / Command
         sitechef publish
 
 
-##Updating your local data for templating
+## Updating your local data for templating
 
 Navigate to your theme directory in the Terminal / Command
 
       sitechef data-update
 
 
-##CLI Options
+## CLI Options
 
-###`sitechef serve [options...]`
+### `sitechef serve [options...]`
 
 -p <int> override port number eg `sitechef serve -p 8080`
 
 -e <string> override environment default `development`, alternative: `production` e.g. `sitechef serve -e production`
 
-#Templating
+# Templating
 
 Full documentation for using this CLI and creating SiteChef Themes
 can be found at [themedocs.sitechef.co.uk](http://themedocs.sitechef.co.uk)
 
 
-##HTML Templates
+## HTML Templates
 
 - SiteChef uses Nunjucks - a javascript implementation of the Jinja2 templating engine
 
-##CSS
+## CSS
 
 - SiteChef uses [SCSS](http://sass-lang.com) for creating the CSS files
 
@@ -95,7 +95,7 @@ can be found at [themedocs.sitechef.co.uk](http://themedocs.sitechef.co.uk)
 - We recommend creating a new SCSS file for each component on your theme
   and importing them in the main theme.scss file
 
-##Javascript
+## Javascript
 
 - The default theme setup uses [Browserify](http://browserify.org/) to compile
   multiple source files into a single javascript file, but you are free to use
@@ -108,13 +108,13 @@ can be found at [themedocs.sitechef.co.uk](http://themedocs.sitechef.co.uk)
 
 - By default all source javascript files are placed in the js/ folder
 
-##Coffeescript
+## Coffeescript
 
 - By default we have a coffeescript workflow that works by compiling and uglifying
   the app.coffee coffeescript file in the coffee/ folder
 
 
-#Best Practices
+# Best Practices
 
 - *Use version control*. Version control will save you a lot of time
   by being able to move back to previous versions without losing
