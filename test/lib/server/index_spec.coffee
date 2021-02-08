@@ -116,6 +116,7 @@ describe "Server/index", ->
 
       req =
         url: '/MYtestUrl'
+        path: '/MytestUrl'
         method: 'GET'
 
       server.customData = {}
@@ -156,6 +157,19 @@ describe "Server/index", ->
 
       server.respond req, res, ->
         throw new Error("Res.json not called")
+  describe "cleanUrl", ->
+    it "should remove trailing slash", ->
+      req =
+        url: '/path-with/trailing-slash/'
+      
+      server.data =
+        '/path-with/trailing-slash':
+          something: 'something'
+      
+      result = server.cleanUrl req
+
+      expect(result).toBe '/path-with/trailing-slash'
+
   describe "getData", ->
     it "should retrieve override from customdata", ->
       server.customData =
@@ -176,6 +190,7 @@ describe "Server/index", ->
       res = server.getData({
         method: 'POST'
         url: '/override_url/api'
+        path: '/override_url/api'
       })
 
       expect(res.templateName).toBe('test.html')

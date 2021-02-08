@@ -218,10 +218,15 @@ module.exports = ->
 
     cleanUrl: (req) =>
       lowercaseUrl = req.url.toLowerCase()
-        .replace /([a-zA-Z])\/$/, '$1'
+        .replace /([a-z0-9])\/$/, '$1'
 
       if lowercaseUrl of @data
         return lowercaseUrl
+
+      lowercasePath = req.path.toLowerCase();
+
+      if lowercasePath of @data
+        return lowercasePath
 
       return req.url
 
