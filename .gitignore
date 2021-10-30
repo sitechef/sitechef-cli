@@ -1,1 +1,8 @@
 node_modules
+yarn-error.log
+.cache
+dist
+build
+build-module
+.parcel-cache
+coverage

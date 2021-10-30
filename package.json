@@ -1,52 +1,73 @@
 {
   "name": "sitechef",
-  "version": "0.0.41",
-  "description": "Command Line Interface for editing, previewing locally and publishing SiteChef themes",
-  "main": "index.js",
-  "bin": {
-    "sitechef": "./bin/sitechef"
-  },
-  "scripts": {
-    "test": "cross-env TEST_ACTIVE=true jasmine-node --captureExceptions --verbose --coffee test/"
-  },
+  "version": "0.1.0-dev",
+  "description": "Command line interface for editing, previewing locally and publishing sitechef themes",
+  "main": "build/cli.js",
+  "bin": "bin/sitechef",
   "repository": {
     "type": "git",
     "url": "git@github.com/sitechef/sitechef-cli.git"
   },
   "keywords": [
-    "CLI",
-    "SiteChef"
+    "SiteChef",
+    "CLI"
+  ],
+  "engines": {
+    "node":">=16"
+  },
+  "files": [
+    "build",
+    "bin"
   ],
   "author": "Campbell Morgan <dev@sitechef.co.uk>",
   "license": "MIT",
+  "type": "commonjs",
+  "private": false,
   "dependencies": {
-    "adm-zip": "^0.4.7",
-    "archiver": "^1.3.0",
-    "async": "^2.4.0",
-    "coffee-script": "^1.12.5",
-    "deep-extend": "^0.5.1",
-    "express": "^4.15.2",
-    "express-request-proxy": "^2.0.0",
-    "glob": "^7.1.1",
-    "lodash": "2.4.1",
-    "mime": "^1.3.4",
-    "minimist": "^1.2.0",
-    "mobile-detect": "^1.3.6",
-    "moment": "^2.22.0",
-    "nunjucks": "3.0.1",
-    "optimist": "^0.6.1",
-    "progress": "^2.0.0",
-    "request": "^2.81.0",
-    "request-progress": "^3.0.0",
-    "restler": "^3.4.0",
-    "single-line-log": "0.4.1",
-    "temp": "^0.8.3",
-    "uuid": "^3.0.1"
+    "@types/mime": "^2.0.3",
+    "@types/minimist": "^1.2.2",
+    "@types/node-fetch": "^2.5.12",
+    "adm-zip": "^0.5.9",
+    "archiver": "^5.3.0",
+    "chokidar": "^3.5.2",
+    "cli-spinner": "^0.2.10",
+    "express": "^4.17.1",
+    "express-http-proxy": "^1.6.3",
+    "glob": "^7.2.0",
+    "glob-promise": "^4.2.2",
+    "mime": "^2.5.2",
+    "minimist": "^1.2.5",
+    "moment": "^2.29.1",
+    "node-fetch": "^2.6.5",
+    "nunjucks": "^3.2.3",
+    "progress": "^2.0.3",
+    "request": "^2.88.2",
+    "temp": "^0.9.4",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "cross-env": "^4.0.0",
-    "jasmine-node": "2.0.0",
-    "nock": "0.52.0",
-    "rimraf": "2.2.8"
+    "@types/adm-zip": "^0.4.34",
+    "@types/archiver": "^5.1.1",
+    "@types/cli-spinner": "^0.2.1",
+    "@types/express": "^4.17.13",
+    "@types/express-http-proxy": "^1.6.3",
+    "@types/glob": "^7.2.0",
+    "@types/jest": "^27.0.2",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^16.11.6",
+    "@types/nunjucks": "^3.2.0",
+    "@types/request": "^2.48.7",
+    "@types/temp": "^0.9.1",
+    "@types/uuid": "^8.3.1",
+    "jest": "^27.3.1",
+    "ts-jest": "^27.0.7",
+    "typescript": "^4.4.4"
+  },
+  "scripts": {
+    "prebuild": "rm -rf build",
+    "build": "tsc",
+    "test": "jest",
+    "prepublish": "yarn build",
+    "typecheck": "tsc --noEmit"
   }
 }
