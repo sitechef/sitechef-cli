@@ -1,4 +1,2 @@
 #!/usr/bin/env node
-require('coffee-script/register');
-require('../lib/cli')();
-
+require('../build/cli').run();
