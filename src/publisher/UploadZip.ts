@@ -6,6 +6,7 @@ import { getUrl } from '../config';
 import { Request } from '../network/Request';
 import { S3Policy, S3Upload } from './S3Upload';
 import { log } from '../logger';
+import { unlink } from 'fs/promises';
 const temp = t.track();
 
 export class UploadZip {
@@ -31,7 +32,7 @@ export class UploadZip {
 		return Array.from(new Set([...files, ...this.alwaysIgnore]));
 	}
 
-	public async start(): Promise<void> {
+	public async start(cleanup = true): Promise<void> {
 		const zipPath = temp.path({ suffix: '.zip' });
 		log('Zipping up directory');
 		const zipFile = await this.buildZip(zipPath);
@@ -39,8 +40,14 @@ export class UploadZip {
 		const policy = await this.getPolicy();
 		log('Uploading zip file to S3');
 		await this.uploadZipS3(policy, zipFile);
+		if (!cleanup) return;
 		log('Uploaded zip file. Removing temp zip file');
 		await temp.cleanup();
+		try {
+			await unlink(zipPath);
+		} catch (e) {
+			//
+		}
 	}
 
 	/**

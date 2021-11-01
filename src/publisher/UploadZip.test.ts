@@ -3,6 +3,9 @@ import path from 'path';
 import t from 'temp';
 import { UploadZip } from './UploadZip';
 import { Request } from '../network/Request';
+import glob from 'glob-promise';
+import AdmZip from 'adm-zip';
+import { unlink } from 'fs/promises';
 
 const temp = t.track();
 
@@ -33,6 +36,7 @@ describe('UploadZip', () => {
 			'prefs.scss',
 			'tmp',
 		].forEach((f) => {
+			writeFileSync(path.join(tempDir, f), 'some-data');
 			writeFileSync(path.join(distDir, f), 'some-data');
 			writeFileSync(path.join(subdir, f), 'some-data');
 			writeFileSync(path.join(fakeNode, f), 'some-data');
@@ -61,13 +65,42 @@ Object {
 				}),
 			};
 		});
-		await z.start();
+		await z.start(false);
 		expect(reqMock).toHaveBeenCalled();
 		expect(uploadZip.mock.calls[0][0]).toMatchInlineSnapshot(`
 Object {
   "policy": "example-policy",
 }
 `);
-		expect(uploadZip.mock.calls[0][1]).toContain('zip');
+		const filePath = uploadZip.mock.calls[0][1];
+		expect(filePath).toContain('zip');
+		// unzip this to a temporary directory
+		const dir = temp.mkdirSync();
+		const zip = new AdmZip(filePath);
+		await zip.extractAllTo(dir, true);
+		const output = await glob.promise('**/*', {
+			cwd: dir,
+		});
+		expect(output).toMatchInlineSnapshot(`
+Array [
+  "dist",
+  "dist/prefs.scss",
+  "dist/subdir",
+  "dist/subdir/prefs.scss",
+  "dist/subdir/test.css",
+  "dist/subdir/test.jpg",
+  "dist/subdir/test.json",
+  "dist/subdir/tmp",
+  "dist/test.css",
+  "dist/test.jpg",
+  "dist/test.json",
+  "dist/tmp",
+  "test.css",
+  "test.jpg",
+  "test.json",
+]
+`);
+		await unlink(filePath);
+		temp.cleanupSync();
 	});
 });
