@@ -35,7 +35,7 @@ export class Request<Result, Body = never> {
 		if (spinner) {
 			this.spinner.start();
 		} else {
-			log(`Requesting ${this.settings.message ?? this.settings.url}`);
+			log(`Request: ${this.settings.message ?? this.settings.url}`);
 		}
 		let res: Response;
 		try {

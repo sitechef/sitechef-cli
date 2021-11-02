@@ -12,13 +12,16 @@ export class FindAndUpload {
 
 	// local subdir for starting point
 	public baseDir = 'scss';
-	public directoryRoot: string;
+	public directoryRoot: string = process.cwd();
 
-	public constructor(public themeRoot: string, public apiKey: string) {
+	public constructor(public themeRoot: string, public apiKey: string) {}
+
+	protected setup(): void {
 		this.directoryRoot = path.join(this.themeRoot, this.baseDir);
 	}
 
 	public async start(): Promise<void> {
+		this.setup();
 		await this.beforeStart();
 		const files = await this.findFiles();
 		await this.uploadFiles(files);
@@ -33,7 +36,7 @@ export class FindAndUpload {
 
 	public async uploadFiles(matches: string[]): Promise<void> {
 		if (matches.length === 0) {
-			logError('No files found of type', this.glob);
+			logError(`No files found matching ${this.glob} in ${this.directoryRoot}`);
 			return;
 		}
 		const maxConcurrent = parseInt(`${process.env.MAX_CONCURRENT || 3}`, 10);
@@ -46,11 +49,13 @@ export class FindAndUpload {
 	public async uploadFile(partialPath: string): Promise<void> {
 		const fullPath = path.join(this.directoryRoot, partialPath);
 		const contents = await readFile(fullPath);
+		const url = getUrl(this.endpoint, partialPath);
+		const body = contents.toString();
 		const req = new Request({
-			url: getUrl(this.endpoint, partialPath),
+			url,
 			method: 'PUT',
 			apiKey: this.apiKey,
-			body: contents.toString(),
+			body,
 			json: false,
 			message: `Uploading ${partialPath}`,
 		});

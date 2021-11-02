@@ -1,6 +1,6 @@
 {
   "name": "sitechef",
-  "version": "0.1.0-dev",
+  "version": "0.1.1-dev",
   "description": "Command line interface for editing, previewing locally and publishing sitechef themes",
   "main": "build/cli.js",
   "bin": "bin/sitechef",
