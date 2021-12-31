@@ -106,6 +106,9 @@ export const run = () => {
 			const environment = argv.e ?? undefined;
 			const forwardingUrl = argv.f ?? undefined;
 			const ignoreSitechefRc = argv.i ?? undefined;
+			if (ignoreSitechefRc) {
+				console.log('Sitechef: Ignoring sitechefrc file...');
+			}
 			new Server({
 				environment,
 				forwardingUrl,
