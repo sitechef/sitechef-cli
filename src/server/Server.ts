@@ -22,6 +22,7 @@ interface Settings {
 	port?: number;
 	environment?: 'development' | 'production';
 	forwardingUrl?: string;
+	ignoreSitechefRc?: boolean;
 }
 export class Server {
 	public server: http.Server;
@@ -33,6 +34,7 @@ export class Server {
 	public forwardingUrl: string | undefined;
 	public pagesById: PagesById;
 	public renderFn: RenderFn | undefined;
+	public ignoreSitechefRc: boolean;
 
 	public rcContents: SitechefRC;
 
@@ -42,9 +44,11 @@ export class Server {
 		themeRoot = process.cwd(),
 		port = 3999,
 		environment = 'development',
+		ignoreSitechefRc = false,
 		forwardingUrl,
 	}: Settings) {
 		this.themeRoot = themeRoot;
+		this.ignoreSitechefRc = ignoreSitechefRc;
 		this.port = port;
 		this.environment = environment;
 		this.forwardingUrl = forwardingUrl;
@@ -58,6 +62,9 @@ export class Server {
 	}
 
 	public readSitechefRC(): SitechefRC {
+		if (this.ignoreSitechefRc) {
+			return {};
+		}
 		return read(this.themeRoot);
 	}
 
@@ -91,6 +98,7 @@ export class Server {
 	}
 
 	public runCmd() {
+		if (this.ignoreSitechefRc) return;
 		if (!this.rcContents.compileCommand) {
 			logError('No `compileCommand` found in the .sitechefrc file');
 			return;

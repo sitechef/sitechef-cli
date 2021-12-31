@@ -43,6 +43,7 @@ export const run = () => {
            -p specify override port eg 9000  
            -e override environment for templating eg 'production' 
            -f forward unhandled requests to this hostname eg 'http://localhost:3030' 
+					 -i ignore .sitechefrc file
     
            To mock up custom pages 
            (ie for email template development or mock apis)
@@ -104,11 +105,13 @@ export const run = () => {
 			const port = argv.p ?? undefined;
 			const environment = argv.e ?? undefined;
 			const forwardingUrl = argv.f ?? undefined;
+			const ignoreSitechefRc = argv.i ?? undefined;
 			new Server({
 				environment,
 				forwardingUrl,
 				port,
 				themeRoot: cwd,
+				ignoreSitechefRc,
 			});
 			return;
 		}
