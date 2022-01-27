@@ -1,5 +1,6 @@
 import * as http from 'http';
 import proxy from 'express-http-proxy';
+import mergeDeep from 'merge-deep';
 import express, { Express, NextFunction, Request, Response } from 'express';
 import { readFileSync } from 'fs';
 import path from 'path';
@@ -209,10 +210,7 @@ export class Server {
 			return {
 				status,
 				templateName,
-				data: {
-					...coreData,
-					...customData.data,
-				},
+				data: mergeDeep(coreData, customData.data),
 			};
 		}
 		return {
