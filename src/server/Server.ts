@@ -10,7 +10,12 @@ import { RenderFn, template } from './template';
 import { read, SitechefRC } from '../rcFile/read';
 import { log, logError } from '../logger';
 
-type FoundData = { data: RootContents; status?: number; templateName: string };
+type FoundData = {
+	data: RootContents;
+	status?: number;
+	templateName: string;
+	isJson: boolean;
+};
 
 type CustomFoundData = FoundData & { merge?: boolean };
 
@@ -138,7 +143,7 @@ export class Server {
 			return next();
 		}
 		const { data, templateName, status = 200 } = result;
-		if (req.xhr || req.headers.accept?.includes('json')) {
+		if (req.xhr || req.headers.accept?.includes('json') || result.isJson) {
 			return res.status(status).json(data);
 		}
 
@@ -176,21 +181,50 @@ export class Server {
 		);
 	}
 
-	public cleanUrl(req: Request): string {
+	public cleanUrl(req: Request): { url: string; isJson: boolean } {
+		let isJson =
+			!!req.headers.accept &&
+			req.headers.accept.toLowerCase() === 'application/json';
+		// lowercase, remove trailing slash
 		const lwr = req.url.toLowerCase().replace(/([a-z0-9])\/$/, '$1');
+		if (lwr.endsWith('.json')) {
+			isJson = true;
+			const shortUrl = lwr.replace('.json', '');
+			return {
+				url: shortUrl,
+				isJson,
+			};
+		}
 		if (this.data[lwr]) {
-			return lwr;
+			return {
+				url: lwr,
+				isJson,
+			};
 		}
 		const path = req.path.toLowerCase();
-
 		if (this.data[path]) {
-			return path;
+			return {
+				url: path,
+				isJson,
+			};
 		}
-		return req.url;
+		if (path.endsWith('.json')) {
+			const shortPath = path.replace('.json', '');
+			if (this.data[shortPath]) {
+				return {
+					url: shortPath,
+					isJson: true,
+				};
+			}
+		}
+		return {
+			url: req.url,
+			isJson,
+		};
 	}
 
 	public getData(req: Request): FoundData | undefined {
-		const url = this.cleanUrl(req);
+		const { url, isJson } = this.cleanUrl(req);
 		const customData = this.getCustomData(req);
 		const coreData = this.data[url] ?? this.data['/'];
 		if (!coreData && !customData) {
@@ -202,18 +236,21 @@ export class Server {
 			const templateName = this.getTemplateName(req, customData);
 			if (!customData.merge) {
 				return {
+					isJson,
 					status,
 					templateName,
 					data,
 				};
 			}
 			return {
+				isJson,
 				status,
 				templateName,
 				data: mergeDeep(coreData, customData.data),
 			};
 		}
 		return {
+			isJson,
 			templateName: 'index.html',
 			data: coreData,
 			status: 200,
@@ -226,6 +263,7 @@ export class Server {
 				templateName: 'comingSoon.html',
 				status: 200,
 				data: {} as any,
+				isJson: false,
 			};
 		}
 		const mockString = `${req.method}=${req.url}`;
