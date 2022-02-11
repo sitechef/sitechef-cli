@@ -2,6 +2,7 @@ import * as http from 'http';
 import proxy from 'express-http-proxy';
 import mergeDeep from 'merge-deep';
 import express, { Express, NextFunction, Request, Response } from 'express';
+import cors from 'cors';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { AbridgedSiteChefCategory, RootContents, Snapshot } from '../snapshot';
@@ -114,6 +115,7 @@ export class Server {
 
 	public generateApp(): Express {
 		this.app = express();
+		this.app.use(cors());
 
 		this.app.use(
 			'/assets/dist',
