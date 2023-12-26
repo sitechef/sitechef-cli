@@ -228,7 +228,7 @@ export class Server {
 	public getData(req: Request): FoundData | undefined {
 		const { url, isJson } = this.cleanUrl(req);
 		const customData = this.getCustomData(req);
-		const coreData = this.data[url] ?? this.data['/'];
+		const coreData = url === '' ? this.data['/'] : this.data[url];
 		if (!coreData && !customData) {
 			return undefined;
 		}
@@ -250,6 +250,9 @@ export class Server {
 				templateName,
 				data: mergeDeep(coreData, customData.data),
 			};
+		}
+		if (!coreData) {
+			return undefined;
 		}
 		return {
 			isJson,
