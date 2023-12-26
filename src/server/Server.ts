@@ -228,11 +228,11 @@ export class Server {
 	public getData(req: Request): FoundData | undefined {
 		const { url, isJson } = this.cleanUrl(req);
 		const customData = this.getCustomData(req);
-		const coreData = url === '' ? this.data['/'] : this.data[url];
+		const coreData: RootContents | undefined =
+			url === '' ? this.data['/'] : this.data[url];
 		if (!coreData && !customData) {
 			return undefined;
 		}
-		coreData.environment = this.environment;
 		if (customData) {
 			const { data, status = 200 } = customData;
 			const templateName = this.getTemplateName(req, customData);
@@ -248,8 +248,13 @@ export class Server {
 				isJson,
 				status,
 				templateName,
-				data: mergeDeep(coreData, customData.data),
+				data: {
+					...mergeDeep(coreData, customData.data),
+					environment: this.environment,
+				},
 			};
+		} else {
+			coreData.environment = this.environment;
 		}
 		if (!coreData) {
 			return undefined;
